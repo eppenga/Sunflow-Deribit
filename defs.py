@@ -196,9 +196,13 @@ def log_error(exception):
     if "S0001" in exception:
         halt_execution = True
 
-    # Authenication warning, not possible to refresh token
-    if "S0002" in exception:
+    # Authenication warning, did not get new token (temporal failure)
+    if "S0002a" in exception:
         halt_execution = False
+
+    # Authenication error, not possible to get new token
+    if "S0002b" in exception:
+        halt_execution = True
 
     # Websocket error, error during connect
     if "S0003" in exception:
