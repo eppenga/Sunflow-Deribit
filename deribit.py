@@ -96,6 +96,10 @@ def authenticate():
             defs.announce(message)
             defs.log_error(message)
     
+    # *** CHECK *** Show authentication data
+    defs.announce("Authentication data:")
+    pprint.pprint(data)
+    
     # Extract token data
     if 'result' in data:
         access_token     = data['result']['access_token']
@@ -104,7 +108,7 @@ def authenticate():
         token_expiration = (current_time + expires_in) - token_adjust
         defs.announce(f"Deribit {token_action} authentication successful, expires in {expires_in} ms")
     else:
-        message = f"Authentication failed: {data}"
+        message = f"*** Error: Authentication failed: {data} ***"
         defs.announce(message)
         defs.log_error(message)
     
