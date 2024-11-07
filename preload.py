@@ -103,8 +103,9 @@ def get_klines(symbol, interval, limit):
     # Check response from exchange
     amount_klines = len(klines['time'])
     if amount_klines != limit:
-        defs.announce(f"*** Error: Tried to load {limit} klines, but exchange only provided {amount_klines} ***")
-        defs.log_error("Insufficient klines provided by exchange")
+        message = f"*** Error S0009: Tried to load {limit} klines, but exchange only provided {amount_klines} ***"
+        defs.announce(message)
+        defs.log_error(message)
       
     # Output to stdout
     defs.announce(f"Initial {limit} klines with {interval}m interval loaded from exchange")

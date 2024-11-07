@@ -92,8 +92,7 @@ def history(orderId, orderLinkId, info):
             order          = data
             order_received = True
         else:
-            message = f"Failed to get order state: {response.status_code}, {response.text}"
-            defs.announce(message)
+            message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
             defs.log_error(message)
             error_code = 1
 
@@ -417,11 +416,11 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        #defs.log_error(e)
         
         # Buy order failed, log, reset active_order and return
-        defs.announce("*** Warning: Buy order failed when placing, trailing stopped! ***")
-        defs.announce(e)    # *** CHECK *** Do something so it doesn't halt when using defs.log_error(e)
+        message = f"*** Warning S0007: Buy order failed when placing, trailing stopped! {e} ***"
+        defs.announce(message)
+        defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
         return active_order, all_buys, info
@@ -515,10 +514,11 @@ def sell(symbol, spot, active_order, prices, info):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        #defs.log_error(e)
 
         # Sell order failed, reset active_order and return
-        defs.announce("*** Warning: Sell order failed due to error, trailing stopped! ***")
+        message = f"*** Warning S0008: Sell order failed due to error, trailing stopped! {e} ***"
+        defs.announce(message)
+        defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))        
         return active_order

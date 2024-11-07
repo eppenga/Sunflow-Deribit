@@ -825,20 +825,22 @@ async def connect_websocket():
             defs.announce("Connected to exchange websocket")
             return websocket
         except Exception as e:
-            defs.announce(f"Exchange websocket error: {e}")
+            message = f"*** Error S0003: Exchange websocket error: {e} ***"
+            defs.announce(message)
+            defs.log_error(message)            
             defs.announce("Reconnecting to exchange in 5 seconds...")
-            defs.log_error(e)
             await asyncio.sleep(5)
 
 # Heartbeat
 async def send_heartbeat(websocket, interval=30):
-    while websocket.open:
+    while websocket.open and not defs.halt_sunflow:
         try:
             await websocket.ping()
             defs.announce("Websocket heartbeat sent to exchange")
         except Exception as e:
-            defs.announce(f"Error sending heartbeat to exchange: {e}")
-            defs.log_error(e)
+            message = f"*** Warning S0004: Warning sending heartbeat to exchange: {e} ***"
+            defs.announce(message)
+            defs.log_error(message)
             break
         await asyncio.sleep(interval)
 
@@ -863,7 +865,7 @@ def simulated_ticker():
 async def call_api(symbol, intervals):
     while not defs.halt_sunflow:
         websocket = await connect_websocket()
-        if websocket:
+        if websocket and not defs.halt_sunflow:
 
             # Create subscription message
             subscription_message = create_subscription_message(symbol, intervals)
@@ -876,7 +878,7 @@ async def call_api(symbol, intervals):
             asyncio.create_task(send_heartbeat(websocket))
             
             # Get data from exchange
-            while websocket.open:
+            while websocket.open and not defs.halt_sunflow:
                 try:
                     #current_time = defs.now_utc()[4]    # *** CHECK *** How to fix simulated tickers??
                     #simulated    = simulated_ticker()                    
@@ -892,14 +894,16 @@ async def call_api(symbol, intervals):
 
                 # Reconnect on connection close
                 except websockets.exceptions.ConnectionClosed as e:
-                    defs.announce(f"Exchange websocket connection closed: {e}")
-                    defs.log_error(e)
+                    message = f"*** Warning S0005: Exchange websocket connection closed: {e} ***"
+                    defs.announce(message)
+                    defs.log_error(message)
                     break
                 
                 # Reconnect on anything else
                 except Exception as e:
-                    defs.announce(f"Exchange websocket error: {e}")
-                    defs.log_error(e)
+                    message = f"*** Error S0006: Exchange websocket error: {e} ***"
+                    defs.announce(message)
+                    defs.log_error(message)
                     break
 
         # Wait before reconnecting

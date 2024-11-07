@@ -55,11 +55,11 @@ def authenticate():
     # Token not valid anymore
     if access_token and current_time > token_expiration:
         token_action = "refresh"
-        if debug:
-            defs.announce("Debug: Refreshing token")
 
     # Get refreshed token via normal session
     if token_action == "refresh":
+        if debug:
+            defs.announce("Debug: Refreshing token")
         message = defs.announce("session: /public/auth")
         try:
             url    = config.api_url + "/public/auth"
@@ -72,12 +72,15 @@ def authenticate():
             response = requests.get(url, params=params)
             data = response.json()
         except Exception as e:
-            defs.announce("Something went wrong with refreshing the token:")
-            print(str(e))
+            message = f"*** Warning S0002: Warning when refreshing token: {e}"
+            defs.announce(message)
+            defs.log_error(message)
             token_action = "new"
 
     # Get new token via normal session
     if token_action == "new":
+        if debug:
+            defs.announce("Debug: Creating new token")
         message = defs.announce("session: /public/auth")
         try:
             url    = config.api_url + "/public/auth"
@@ -89,8 +92,9 @@ def authenticate():
             response = requests.get(url, params=params)
             data = response.json()
         except Exception as e:
-            defs.announce("Something went wrong with creating a new token:")
-            defs.log_error(e)
+            message = f"*** Error: S0001: Error when creating a new token: {e}"
+            defs.announce(message)
+            defs.log_error(message)
     
     # Extract token data
     if 'result' in data:

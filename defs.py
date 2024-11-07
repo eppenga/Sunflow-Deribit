@@ -192,26 +192,59 @@ def log_error(exception):
     # Create message
     message = timestamp + f"{filename}: {functionname}: {exception}"
 
-    # Websocket error
-    if "no close frame received or sent" in exception:
-        defs.announce("*** Warning: Websocket says: 'no close frame received or sent' ***")
+    # Authenication error, not possible to create new token
+    if "S0001" in exception:
+        halt_execution = True
+
+    # Authenication warning, not possible to refresh token
+    if "S0002" in exception:
+        halt_execution = False   
+
+    # Websocket error, error during connect
+    if "S0003" in exception:
+        halt_execution = True  
+
+    # Websocket warning, no close frame (part of S0003, but then a warning)
+    if ("S0003" in exception) and ("no close frame received or sent" in exception):
         halt_execution = False
+
+    # Websocket warning, no heartbeat received
+    if "S0004" in exception:
+        halt_execution = False
+
+    # Websocket warning, connection closed unexectedly
+    if "S0005" in exception:
+        halt_execution = False
+
+    # Websocket error, error during getting data
+    if "S0006" in exception:
+        halt_execution = True
+
+    # Buy warning, buy order failed when placing
+    if "S0007" in exception:
+        halt_execution = False   
+
+    # Sell warning, sell order failed when placing
+    if "S0008" in exception:
+        halt_execution = False
+
+    # Klines error, not enough available at exchange
+    if "S0009" in exception:
+        halt_execution = True
+
+    # Amend quantity in order, warning order could not be amended
+    if "S0010" in exception:
+        halt_execution = False     
+
+    # Amend price in order, warning order could not be amended
+    if "S0011" in exception:
+        halt_execution = False     
 
     # Error: Dataframe failure
     if ("(30908)" in exception) or ("Length of values" in exception) or ("All arrays must be of the same length" in exception):
         defs.announce(f"*** Warning: Dataframe issue for the {df_errors + 1} time! ***", True, 1)
         halt_execution = False
-
-    # Error: Remote disconnected
-    if ("(ErrCode: 12940)" in exception) or ("RemoteDisconnected" in exception):
-        defs.announce("*** Warning: Remote disconnected! ***", True, 1)
-        halt_execution = False
-    
-    # Error: Read time out
-    if "HTTPSConnectionPool" in exception:
-        defs.announce("*** Warning: Read time out! ***", True, 1)
-        halt_execution = False
-    
+       
     # Write to error log file
     with open(config.error_file, 'a', encoding='utf-8') as file:
         file.write(message + "\n")

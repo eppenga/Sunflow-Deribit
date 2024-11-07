@@ -365,8 +365,9 @@ def aqs_helper(symbol, active_order, info, all_sells, all_sells_new):
 
     if amend_code == 100:
         # Critical error, let's log it and revert
-        defs.announce("*** Warning: Critical failure while trailing! ***", True, 1)
-        defs.log_error(amend_error)
+        message = f"*** Warning S0010: Critical failure while trailing! {amend_error} ***"
+        defs.announce(message, True, 1)
+        defs.log_error(message)
 
     # Return data
     return active_order, all_sells, all_sells_new
@@ -475,8 +476,9 @@ def atp_helper(symbol, active_order, info):
 
     if amend_code == 100:
         # Critical error, let's log it and revert
-        defs.announce("*** Warning: Critical failure while trailing", True, 1)
-        defs.log_error(amend_error)
+        message = f"*** Warning S0011: Critical failure while trailing! {amend_error} ***"
+        defs.announce(message, True, 1)
+        defs.log_error(message)
     
     # Return active_order
     return active_order
