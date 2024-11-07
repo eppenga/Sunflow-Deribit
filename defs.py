@@ -198,11 +198,11 @@ def log_error(exception):
 
     # Authenication warning, not possible to refresh token
     if "S0002" in exception:
-        halt_execution = False   
+        halt_execution = False
 
     # Websocket error, error during connect
     if "S0003" in exception:
-        halt_execution = True  
+        halt_execution = True
 
     # Websocket warning, no close frame (part of S0003, but then a warning)
     if ("S0003" in exception) and ("no close frame received or sent" in exception):
@@ -222,7 +222,7 @@ def log_error(exception):
 
     # Buy warning, buy order failed when placing
     if "S0007" in exception:
-        halt_execution = False   
+        halt_execution = False
 
     # Sell warning, sell order failed when placing
     if "S0008" in exception:
@@ -234,12 +234,16 @@ def log_error(exception):
 
     # Amend quantity in order, warning order could not be amended
     if "S0010" in exception:
-        halt_execution = False     
+        halt_execution = False
 
     # Amend price in order, warning order could not be amended
     if "S0011" in exception:
-        halt_execution = False     
+        halt_execution = False
 
+    # Order history, order disappeared without reason
+    if "S0012" in exception:
+        halt_execution = True
+       
     # Error: Dataframe failure
     if ("(30908)" in exception) or ("Length of values" in exception) or ("All arrays must be of the same length" in exception):
         defs.announce(f"*** Warning: Dataframe issue for the {df_errors + 1} time! ***", True, 1)

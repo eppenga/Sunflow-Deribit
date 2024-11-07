@@ -88,9 +88,14 @@ def history(orderId, orderLinkId, info):
 
         # Order response
         if response.status_code == 200:
-            data['result'] = data['result'][0]   # labels are not unique at Deribit, for Sunflow they are
-            order          = data
-            order_received = True
+            if data['result'] != []:
+                data['result'] = data['result'][0]   # labels are not unique at Deribit, for Sunflow they are
+                order          = data
+                order_received = True
+            else:
+                message = f"*** Error S0012: Order dissappeared from exchange without cause, order ID '{orderId}' and custom ID '{orderLinkId} ***'"
+                defs.announce(message)
+                defs.log_error(message)
         else:
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
             defs.log_error(message)
