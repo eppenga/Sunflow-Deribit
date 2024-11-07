@@ -1,0 +1,8 @@
+apprise
+matplotlib
+requests
+pytz
+seaborn
+websockets
+pandas==2.2.1
+pandas-ta==0.2.45b

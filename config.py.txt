@@ -1,0 +1,119 @@
+### Sunflow Cryptobot ###
+#
+# Config file
+
+## CHANGE TO YOUR LIKING
+
+# Default values
+symbol              = "XRPUSDC"    # Symbol bot used for trading
+interval_1          = 1            # Klines timeframe default interval in minutes
+interval_2          = 3            # Klines timeframe first confirmation interval, set to 0 if you do not want to use this
+interval_3          = 5            # Klines timeframe second confirmation interval, set to 0 if you do not want to use this
+interval_average    = False        # Calculate the average over the active intervals or treat them separately
+limit               = 250          # Number of klines downloaded, used for calculcating technical indicators
+profit              = 0.400        # Minimum profit percentage
+distance            = 0.100        # Trigger price distance percentage when Fixed is used by wiggle
+wiggle              = "Fixed"      # Method for trigger price distance, Fixed, Spot, Wave, ATR, EMA or Hybrid
+depth               = 0.10         # Depth in percentages used to calculate market depth from orderbook
+multiplier          = 1.00         # Multiply minimum order quantity by this factor
+
+# Spread between orders
+spread_enabled      = True         # Use spread as buy indicator
+spread_distance     = 0.200        # Minimum spread in percentages
+
+# Technical indicators
+indicators_enabled  = True         # Use technical indicators as buy indicator
+indicators_minimum  = -0.25        # Minimum advice value
+indicators_maximum  = +0.50        # Maximum advice value
+
+# Wave length
+wave_timeframe      = 10000        # Timeframe in ms to measure wave length, used when wiggle uses Wave, EMA or Hybrid
+wave_multiplier     = 1.00         # Multiply wave percentage by this multiplier
+
+# Exchange keys (ALWAYS KEEP THESE SECRET)
+api_key             = "123456"     # API Key
+api_secret          = "123456"     # API Secret
+
+
+## EXPERIMENTAL PARAMETERS
+
+# Compounding
+compounding_enabled = False        # Use compounding to adjust minimum order value
+compounding_start   = 1000         # Amount in quote asset when the Sunflow started
+
+# Price limits
+pricelimit_enabled  = False        # Use price limits
+pricelimit_max_buy  = 0            # Maximum buy price, set to 0 if do not want to use this
+pricelimit_min_sell = 0            # Minimum sell price, set to 0 if do not want to use this
+pricelimit_max_sell = 0            # Maximum sell price, set to 0 if do not want to use this
+
+# Optimizer
+optimizer_enabled   = False        # Try to optimize the minimum profit and trigger price distance percentage
+optimizer_spread    = False        # If optimize is active, also optimize spread distance
+optimizer_sides     = "Buy,Sell"   # When optimizing optimize both on buy and sell or only sell
+optimizer_interval  = 30           # Interval in minutes used for indicator KPI
+optimizer_limit_min = 25920000     # Minimum miliseconds of spot price data (8,640,000 is one day)
+optimizer_limit_max = 864000000    # Maximum miliseconds of spot price data
+optimizer_adj_min   = 0            # Minimum profit and trigger price adjustment (-50 = halve)
+optimizer_adj_max   = 100          # Maximum profit and trigger price adjustment (100 = double)
+optimizer_scaler    = 1.0          # Multiply optimized profit and trigger price distance by this factor
+
+# Orderbook
+orderbook_enabled   = False        # Use orderbook as buy indicator
+orderbook_minimum   = 0            # Minimum orderbook buy depth percentage
+orderbook_maximum   = 45           # Maximum orderbook buy depth percentage
+orderbook_average   = True         # Average out orderbook depth data or use last data point
+orderbook_limit     = 50           # Number of orderbook data elements to keep in database
+orderbook_timeframe = 5000         # Timeframe in ms for averaging out
+
+# Trade
+trade_enabled       = False        # Use trades as buy indicator
+trade_minimum       = 55           # Minimum trade buy ratio percentage
+trade_maximum       = 100          # Maximum trade buy ratio percentage
+trade_limit         = 100          # Number of trade orders to keep in database
+trade_timeframe     = 25000        # Timeframe in ms to collect realtime trades
+
+
+## ONLY FOR ADVANCED USERS
+
+# Load external libraries
+from pathlib import Path
+
+# Get current filename without .py
+config_path         = Path(__file__)
+config_file         = config_path.stem + "_"
+if config_file     == "config_": config_file = ""
+
+# Data storage
+data_folder         = "data/"                                    # Where is data stored
+data_suffix         = data_folder + config_file                  # Format of data and log files
+dbase_file          = data_suffix + "buy_orders.json"            # Database file buy orders
+exchange_file       = data_suffix + "exchange.log"               # Exchange log file
+error_file          = data_suffix + "errors.log"                 # Error log file
+revenue_file        = data_suffix + "revenue.log"                # Revenue log file
+
+# Notify using Apprise (https://github.com/caronc/apprise)
+notify_1_enabled    = False                                      # Primary group of messaging clients (usually Telegram)
+notify_1_urls       = ["tgram://bot_token/chat_id"]              # Fill in your bot_token and chat_id
+notify_1_level      = 1                                          # Notify level 0 is extended, 1 is normal
+notify_2_enabled    = False                                      # Secondary group of messaging clients (usually LaMetric)
+notify_2_urls       = ["lametric://apikey@device_ipaddr"]        # Fill in your api key and ip addres of your LaMetric
+notify_2_level      = 1                                          # Notify level 0 is extended, 1 is normal
+
+# Debug, logs, reporting and other switches
+debug               = False                                      # Turn debug on or off
+timeutc_std         = False                                      # Use UTC or local time, please set timezone accordingly
+timezone_str        = "Europe/Amsterdam"                         # Timezone to use when displaying local time 
+exchange_log        = True                                       # Keep a log of all exchange sessions
+revenue_log         = True                                       # Log revenue of Sunflow to file
+revenue_log_extend  = False                                      # Extended or normal logging to file
+revenue_log_sides   = True                                       # Log buy and sell orders or only sell to file
+wallet_report       = True                                       # Report wallet value, database and coins (also used by compounding)
+session_report      = True                                       # Report exchange sessions to stdout
+database_rebalance  = True                                       # Sync the base asset of the buys database to the exchange
+protect_peaks       = True                                       # Slow down distance to minimum
+quick_check         = False                                      # Quick check orders on startup
+func_show_delay     = False                                      # When set to True, delay messages are always shown
+func_norm_delay     = 500                                        # Show message when execution of a function is greater in ms
+func_warn_delay     = 1000                                       # Show warning when execution of a function is greater in ms
+error_level         = 1                                          # Error level 0 is extended, 1 is normal
