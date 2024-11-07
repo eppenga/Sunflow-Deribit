@@ -441,7 +441,8 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     # Report to stdout
     message = f"Buy order opened for {defs.format_number(active_order['qty'], info['basePrecision'])} {info['baseCoin']} "
     message = message + f"at trigger price {defs.format_number(active_order['trigger'], info['tickSize'])} {info['quoteCoin']} "
-    message = message + f"with order ID '{active_order['orderid']}' and custom ID '{active_order['linkid']}'"
+    message = message + f"with order ID '{active_order['orderid']}'"
+    if debug: message = message + f" and custom ID '{active_order['linkid']}'"
     defs.announce(message, True)
 
     # Prepare for Deribit decode
@@ -539,7 +540,8 @@ def sell(symbol, spot, active_order, prices, info):
     # Output to stdout and Apprise
     message = f"Sell order opened for {defs.format_number(active_order['qty'], info['basePrecision'])} {info['baseCoin']} "
     message = message + f"at trigger price {defs.format_number(active_order['trigger'], info['tickSize'])} {info['quoteCoin']} "
-    message = message + f"with order ID {active_order['orderid']} and custom ID '{active_order['linkid']}'"
+    message = message + f"with order ID {active_order['orderid']}"
+    if debug: message = message + f" and custom ID '{active_order['linkid']}'"
     defs.announce(message, True)
 
     # Report execution time
