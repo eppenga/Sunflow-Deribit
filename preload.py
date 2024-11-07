@@ -289,6 +289,9 @@ def check_files():
 # Check orders in database if they still exist
 def check_orders(transactions, info):
     
+    # Debug
+    debug = False
+    
     # Initialize variables
     message          = ""
     all_buys         = []
@@ -305,14 +308,18 @@ def check_orders(transactions, info):
         # Check orders
         if quick:
             # Only check order on exchange if status is not Closed
-            defs.announce(f"Checking order from database with order ID {transaction['orderId']} and custom ID {transaction['orderLinkId']}")
+            message = f"Checking order from database with order ID '{transaction['orderId']}'"
+            if debug: message = message + f" and custom ID '{transaction['orderLinkId']}'"
+            defs.announce(message)
             temp_transaction = transaction
             if transaction['status'] != "Closed":
                 defs.announce("Performing an additional check on order status via exchange")
                 temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)
         else:
             # Check all order on exchange regardless of status
-            defs.announce(f"Checking order on exchange: {transaction['orderId']}, {transaction['orderLinkId']}")
+            message = f"Checking order on exchange: '{transaction['orderId']}'"
+            if debug: message = message + f"'{transaction['orderLinkId']}'"
+            defs.announce(message)
             temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)
 
         # Assign status, if not filled just disregard

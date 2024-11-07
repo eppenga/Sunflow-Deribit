@@ -57,9 +57,8 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
     if do_check_order:
 
         # Report to stdout
-        message = f"Performing {type_check} check on {active_order['side'].lower()} order with order ID {active_order['orderid']}"
-        if debug:
-            message = message + f" and custom ID {active_order['linkid']}"
+        message = f"Performing {type_check} check on {active_order['side'].lower()} order with order ID '{active_order['orderid']}'"
+        if debug: message = message + f" and custom ID '{active_order['linkid']}'"
         defs.announce(message)
 
         # Reset stuck
@@ -166,7 +165,7 @@ def check_spike(symbol, spot, active_order, order, all_buys, info):
             all_buys = orders.rebalance(all_buys, info)
     
     if error_code == 1:
-        defs.announce(f"Order ID {active_order['orderid']} and custom ID {active_order['linkid']} spiked, but order was not found at exchange!", True, 1)
+        defs.announce(f"Order ID '{active_order['orderid']}' and custom ID '{active_order['linkid']}' spiked, but order was not found at exchange!", True, 1)
 
     # Report execution time
     if speed: defs.announce(defs.report_exec(stime))
