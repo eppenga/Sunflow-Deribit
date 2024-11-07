@@ -1,6 +1,6 @@
 ### Sunflow Cryptobot ###
 #
-# Traling buy and sell 
+# Traling buy and sell
 
 # Load external libraries
 import pprint, requests, threading
