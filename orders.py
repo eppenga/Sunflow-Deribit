@@ -160,7 +160,7 @@ def decode(order):
 def cancel(symbol, orderId, orderLinkId):
 
     # Debug and speed
-    debug = True
+    debug = False
     speed = True
     stime = defs.now_utc()[4]
 
@@ -372,7 +372,7 @@ def check_sell(spot, profit, active_order, all_buys, use_pricelimit, pricelimit_
 def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
 
     # Debug and speed
-    debug = True
+    debug = False
     speed = True
     stime = defs.now_utc()[4]
     
@@ -474,7 +474,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
 def sell(symbol, spot, active_order, prices, info):
 
     # Debug and speed
-    debug = True
+    debug = False
     speed = True
     stime = defs.now_utc()[4]
 

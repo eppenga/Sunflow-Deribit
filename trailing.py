@@ -215,7 +215,7 @@ def calculate_revenue(transaction, all_sells, spot, info):
 def close_trail(active_order, all_buys, all_sells, spot, info):
 
     # Debug and speed
-    debug = True
+    debug = False
     speed = True
     stime = defs.now_utc()[4]
     

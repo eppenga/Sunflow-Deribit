@@ -145,7 +145,7 @@ def register_buy(buy_order, all_buys, info):
 def register_sell(all_buys, all_sells, info):
     
     # Debug
-    debug = True
+    debug = False
     speed = False
     stime = defs.now_utc()[4]
     
