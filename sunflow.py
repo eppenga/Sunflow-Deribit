@@ -750,7 +750,7 @@ pprint.pprint(info)
 #pprint.pprint(klines)
 
 print("\n** Deribit **")
-print(f"Authentication successful expiration at Epoch {config.token_expiration} ms\n")
+print(f"Authentication successful, expiration at Unix epoch {config.token_expiration} ms\n")
 if config.wallet_report:
     print("\n** Wallet **")
     temp_wallet = orders.report_wallet(spot, all_buys, info)

@@ -27,9 +27,9 @@ def set_token_data(token):
         defs.announce("Debug: Setting token to config")
         
     # Set token
-    config.access_token     = token["access"]
-    config.refresh_token    = token["refresh"]
-    config.token_expiration = token["expires"]
+    config.access_token     = token['access']
+    config.refresh_token    = token['refresh']
+    config.token_expiration = token['expires']
 
     # Return
     return token
@@ -54,13 +54,13 @@ def extract_token_data(data, token):
         token_stuck = 0
 
         # Asssign token variable
-        token["access"]  = data['result']['access_token']
-        token["refresh"] = data['result']['refresh_token']
-        token["valid"]   = data['result']['expires_in']
-        token["expires"] = token["now"] + token["valid"]
+        token['access']  = data['result']['access_token']
+        token['refresh'] = data['result']['refresh_token']
+        token['valid']   = data['result']['expires_in']
+        token['expires'] = token['now'] + token['valid']
         
         # Broadcast
-        defs.announce(f"Deribit {token["action"]} authentication successful, valid for {token["valid"]} ms")
+        defs.announce(f"Deribit {token['action']} authentication successful, valid for {token['valid']} ms")
         
     else:
         # Get a new token or fail
@@ -129,7 +129,7 @@ def refresh_token(token):
         url    = config.api_url + "/public/auth"
         params = {
             "grant_type"   : "refresh_token",
-            "refresh_token": str(token["refresh"]),
+            "refresh_token": str(token['refresh']),
             "client_id"    : str(config.api_key),
             "client_secret": str(config.api_secret)
         }
@@ -163,11 +163,11 @@ def authenticate():
   
     # Initialize token
     token            = {}
-    token["access"]  = ""
-    token["refresh"] = ""
-    token["expires"] = 0
-    token["action"]  = "new"
-    token["now"]     = defs.now_utc()[4]
+    token['access']  = ""
+    token['refresh'] = ""
+    token['expires'] = 0
+    token['action']  = "new"
+    token['now']     = defs.now_utc()[4]
     
     # Initialize token in config if required
     try:
@@ -181,29 +181,29 @@ def authenticate():
     
     # Fill token if possible
     if config.access_token and config.refresh_token and config.token_expiration:
-        token["access"]  = config.access_token
-        token["refresh"] = config.refresh_token
-        token["expires"] = config.token_expiration
+        token['access']  = config.access_token
+        token['refresh'] = config.refresh_token
+        token['expires'] = config.token_expiration
        
     # Check if can keep old token
-    if token["access"] and token["refresh"] and token["now"] < token["expires"]:
+    if token['access'] and token['refresh'] and token['now'] < token['expires']:
         if debug: defs.announce("Debug: Reauthentication not required")
         return
 
     # Check if a new token is needed
-    if not token["access"] or not token["refresh"] or not token["expires"]:
-        token["action"] = "new"
+    if not token['access'] or not token['refresh'] or not token['expires']:
+        token['action'] = "new"
         
     # Check if we can just refresh the token
-    if token["access"] and token["refresh"] and token["now"] > token["expires"]:
-        token["action"] = "refresh"
+    if token['access'] and token['refresh'] and token['now'] > token['expires']:
+        token['action'] = "refresh"
 
     # Get refreshed token
-    if token["action"] == "refresh":
+    if token['action'] == "refresh":
         token = refresh_token(token)
 
     # Get new token
-    if token["action"] == "new":
+    if token['action'] == "new":
         token = new_token(token)
     
     # Set token data
