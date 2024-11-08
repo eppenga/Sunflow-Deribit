@@ -595,6 +595,10 @@ def rate_limit(response):
       
     # Debug
     debug = True
+
+    # Debug to stdout
+    if debug:
+        defs.announce("Debug: Checking response for rate limit issues")
     
     # Initialize variables
     code    = 0
