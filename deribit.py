@@ -57,7 +57,8 @@ def extract_token_data(data, token):
         token['access']  = data['result']['access_token']
         token['refresh'] = data['result']['refresh_token']
         token['valid']   = data['result']['expires_in']
-        token['expires'] = token['now'] + token['valid']
+        token['now']     = defs.now_utc()[4]
+        token['expires'] = token['now'] + token['valid'] - token['adjust']
         
         # Broadcast
         defs.announce(f"Deribit {token['action']} authentication successful, valid for {token['valid']} ms")
@@ -103,6 +104,9 @@ def new_token(token):
         }
         response = requests.get(url, params=params)
         data = response.json()
+        if debug:
+            defs.announce("Raw new token response:")
+            pprint.pprint(data)
     except Exception as e:
         message = f"*** Error: S0001: Error when creating a new token: {e}"
         defs.log_error(message)
@@ -135,6 +139,9 @@ def refresh_token(token):
         }
         response = requests.get(url, params=params)
         data = response.json()
+        if debug:
+            defs.announce("Raw refresh token response:")
+            pprint.pprint(data)
     except Exception as e:
         
         # Throw warning
@@ -162,12 +169,13 @@ def authenticate():
         defs.announce("Debug: Authenticating")
   
     # Initialize token
-    token            = {}
-    token['access']  = ""
-    token['refresh'] = ""
-    token['expires'] = 0
-    token['action']  = "new"
-    token['now']     = defs.now_utc()[4]
+    token            = {}                   # All token data
+    token['access']  = ""                   # Access token
+    token['refresh'] = ""                   # Refresh token
+    token['expires'] = 0                    # When will the token expiry
+    token['adjust']  = 100                  # Subtract from expires
+    token['action']  = "new"                # Get a new or refresh token
+    token['now']     = defs.now_utc()[4]    # Current time
     
     # Initialize token in config if required
     try:

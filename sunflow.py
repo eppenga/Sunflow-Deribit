@@ -700,12 +700,10 @@ if intervals[3] !=0  : klines[intervals[3]] = preload.get_klines(symbol, interva
 ticker               = preload.get_ticker(symbol)
 spot                 = ticker['lastPrice']
 info                 = preload.get_info(symbol, spot, multiplier, compounding)
+deribit.authenticate()
 all_buys             = database.load(config.dbase_file, info)
 all_buys             = preload.check_orders(all_buys, info)
 prices               = preload.get_prices(symbol, 1, 1000)
-
-# Preload Deribit authentication
-deribit.authenticate()
 
 # Preload optimizer and load prices
 if optimizer['enabled']:
