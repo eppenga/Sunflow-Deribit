@@ -105,10 +105,10 @@ def new_token(token):
         response = requests.get(url, params=params)
         data = response.json()
         if debug:
-            defs.announce("Raw new token response:")
+            defs.announce("Debug: Raw new token response:")
             pprint.pprint(data)
     except Exception as e:
-        message = f"*** Error: S0001: Error when creating a new token: {e}"
+        message = f"*** Error: S0001: Error when creating a new token: {e} ***"
         defs.log_error(message)
     
     # Extract token data and check validity
@@ -140,12 +140,12 @@ def refresh_token(token):
         response = requests.get(url, params=params)
         data = response.json()
         if debug:
-            defs.announce("Raw refresh token response:")
+            defs.announce("Debug: Raw refresh token response:")
             pprint.pprint(data)
     except Exception as e:
         
         # Throw warning
-        message = f"*** Warning S0002: Warning when refreshing token: {e}"
+        message = f"*** Warning S0002: Warning when refreshing token: {e} ***"
         defs.log_error(message)
         
         # Get new token

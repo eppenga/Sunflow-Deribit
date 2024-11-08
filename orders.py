@@ -94,7 +94,6 @@ def history(orderId, orderLinkId, info):
                 order_received = True
             else:
                 message = f"*** Error S0012: Order dissappeared from exchange without cause, order ID '{orderId}' and custom ID '{orderLinkId} ***'"
-                defs.announce(message)
                 defs.log_error(message)
         else:
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
@@ -424,7 +423,6 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
         
         # Buy order failed, log, reset active_order and return
         message = f"*** Warning S0007: Buy order failed when placing, trailing stopped! {e} ***"
-        defs.announce(message)
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
@@ -523,7 +521,6 @@ def sell(symbol, spot, active_order, prices, info):
 
         # Sell order failed, reset active_order and return
         message = f"*** Warning S0008: Sell order failed due to error, trailing stopped! {e} ***"
-        defs.announce(message)
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))        
