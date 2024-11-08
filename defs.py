@@ -592,63 +592,37 @@ def decide_buy(indicators_advice, use_indicators, spread_advice, use_spread, ord
 
 # Deal with API rate limit
 def rate_limit(response):
-    
-    # Skip for now
-    pass
-    return response
-    
+      
     # Debug
-    debug = False
+    debug = True
     
     # Initialize variables
-    delay  = 0
-    status = 0
-    limit  = 0
-    skip   = False
+    code    = 0
+    message = ""
+    delay   = 5
+    skip    = False
 
-    # Get Status and Limit
+    # Get code and error
     try:
-        status = float(response[2]['X-Bapi-Limit-Status'])
-        limit  = float(response[2]['X-Bapi-Limit'])
-    except:
-        if debug:
-            defs.announce("*** Warning: API Rate Limit info does not exist in data, probably public request! ***")
+        code    = int(response['error']['code'])
+        message = str(response['error']['message'])
+    except KeyError:
         skip = True
 
-    # Continue when API Rate Limit is presence
+    # Check for rate issues
     if not skip:
-   
-        # Delay logic
-        ratio = (limit - status) / limit
-        if ratio > 0.5:
-            delay = delay + 0.1
-        if ratio > 0.7:
-            delay = delay + 0.3
-        if ratio > 0.8:
-            delay = delay + 0.6
-        if ratio > 0.9:
-            delay = delay + 1
 
         # Debug to stdout
         if debug:
-            defs.announce(f"Status is {status} and limit is {limit}, therefore API delay is set to {delay:.1f} seconds\n")
-        
-        # Hard exit
-        if ratio > 1:
-            defs.announce("f*** ERROR: API RATE LIMIT EXCEED, STOPPED TO PREVENT PERMANENT BAN! ***", True, 0)
-            defs.halt_sunflow = True
-            exit()
-        
-        # Inform of delay
-        if delay:
+            defs.announce(f"Debug: Encountered an error with code {code} and response: {message}")
+
+        # Rate issue
+        if code == 10028:
             defs.announce(f"*** WARNING: API RATE LIMIT HIT, DELAYING SUNFLOW {delay} SECONDS! ***", True, 1)
             time.sleep(delay)
     
-    # Clean response data
-    data = response[0]
-
     # Return cleaned response
-    return data
+    return response
 
 # Report ticker info to stdout
 def report_ticker(spot, new_spot, rise_to, active_order, all_buys, info):

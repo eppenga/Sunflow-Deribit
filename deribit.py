@@ -107,6 +107,7 @@ def new_token(token):
         if debug:
             defs.announce("Debug: Raw new token response:")
             pprint.pprint(data)
+            print()
     except Exception as e:
         message = f"*** Error: S0001: Error when creating a new token: {e} ***"
         defs.log_error(message)
@@ -142,6 +143,7 @@ def refresh_token(token):
         if debug:
             defs.announce("Debug: Raw refresh token response:")
             pprint.pprint(data)
+            print()
     except Exception as e:
         
         # Throw warning
