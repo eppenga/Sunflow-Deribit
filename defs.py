@@ -258,7 +258,7 @@ def log_error(exception):
         file.write(message + "\n")
     
     # Output to stdout
-    defs.announce(f"Exception: {exception}")
+    defs.announce(f"Exception: {exception} | File: {filename} | Function: {functionname}")
     
     # Terminate hard
     if halt_execution:
@@ -594,11 +594,11 @@ def decide_buy(indicators_advice, use_indicators, spread_advice, use_spread, ord
 def rate_limit(response):
       
     # Debug
-    debug = True
+    debug = False
 
     # Debug to stdout
     if debug:
-        defs.announce("Debug: Checking response for rate limit issues")
+        defs.announce("Debug: Checking exchange response for rate limit issues")
     
     # Initialize variables
     code    = 0

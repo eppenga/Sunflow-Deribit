@@ -72,7 +72,7 @@ def extract_token_data(data, token):
             defs.log_error(message)
             
             # Get a new token
-            defs.announce("Getting a new token")
+            defs.announce("Getting a new token, because it failed")
             token = new_token(token)
 
         else:
