@@ -763,7 +763,7 @@ if config.wallet_report:
     print("(bot value, base coins exchange, quote coins exchange, base coins database, out of sync)")
     pprint.pprint(temp_wallet)
 
-exit()
+#exit()
 
 
 ## Announce start
