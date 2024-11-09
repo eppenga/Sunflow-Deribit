@@ -20,7 +20,7 @@ token_stuck = 0
 def set_token_data(token):
     
     # Debug
-    debug = True
+    debug = False
 
     # Debug to stdout
     if debug:
@@ -38,7 +38,7 @@ def set_token_data(token):
 def extract_token_data(data, token):
 
     # Debug
-    debug = True
+    debug = False
 
     # Declare global token stuck counter
     global token_stuck
@@ -87,7 +87,7 @@ def extract_token_data(data, token):
 def new_token(token):
     
     # Debug
-    debug = True
+    debug = False
 
     # Debug to stdout
     if debug:
@@ -122,7 +122,7 @@ def new_token(token):
 def refresh_token(token):
     
     # Debug
-    debug = True
+    debug = False
 
     # Debug to stdout
     if debug:
@@ -164,7 +164,7 @@ def refresh_token(token):
 def authenticate():
   
     # Debug
-    debug = True
+    debug = False
   
     # Debug to stdout
     if debug:

@@ -201,8 +201,8 @@ def calculate_revenue(transaction, all_sells, spot, info):
     # Output to stdout for debug
     if debug:
         message = f"Debug: Total sells {sells} {info['quoteCoin']}, buys {buys} {info['quoteCoin']}, "
-        message = message + f"buy fees {fees['buy']} {info['quoteCoin']}, sell were {fees['sell']}, total fees {fees['total']}, "
-        message = message + f"giving a revenue of {defs.format_number(revenue, info['quotePrecision'])} {info['quoteCoin']}"
+        message = message + f"buy fees {fees['buy']} {info['quoteCoin']}, sell fees {fees['sell']} {info['quoteCoin']}, total fees {fees['total']} {info['quoteCoin']}, "
+        message = message + f"giving a profit of {defs.format_number(revenue, info['quotePrecision'])} {info['quoteCoin']}"
         defs.announce(message)
 
     # Report execution time
