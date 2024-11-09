@@ -419,6 +419,10 @@ def handle_kline(message, interval):
 # Handle messages to keep orderbook up to date
 def handle_orderbook(message):
     
+    # To be implemented for Deribit
+    pass
+    return
+    
     # Debug and speed
     debug_1 = False    # Show orderbook
     debug_2 = False    # Show buy and sell depth percentages
@@ -521,6 +525,10 @@ def handle_orderbook(message):
 
 # Handle messages to keep trades up to date
 def handle_trade(message):
+
+    # To be implemented for Deribit
+    pass
+    return
     
     # Debug
     debug_1 = False   # Show incoming trade
@@ -755,7 +763,7 @@ if config.wallet_report:
     print("(bot value, base coins exchange, quote coins exchange, base coins database, out of sync)")
     pprint.pprint(temp_wallet)
 
-#exit()
+exit()
 
 
 ## Announce start
