@@ -371,7 +371,7 @@ def check_sell(spot, profit, active_order, all_buys, use_pricelimit, pricelimit_
 def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
 
     # Debug and speed
-    debug = False
+    debug = True
     speed = True
     stime = defs.now_utc()[4]
     
@@ -473,7 +473,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
 def sell(symbol, spot, active_order, prices, info):
 
     # Debug and speed
-    debug = False
+    debug = True
     speed = True
     stime = defs.now_utc()[4]
 
