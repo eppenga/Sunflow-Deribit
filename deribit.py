@@ -278,3 +278,24 @@ def prep_decode(data):
 
     # Return order
     return order
+
+# Get the actual code and message
+def check_response(data):
+    
+    # Debug
+    debug = False
+    
+    # Initialize variables
+    code    = 0
+    message = ""
+    skip    = False
+    
+    # Get code and error
+    try:
+        code    = int(data['error']['code'])
+        message = str(data['error']['message'])
+    except KeyError:
+        skip = True
+
+    # Return    
+    return code, message, skip

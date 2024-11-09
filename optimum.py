@@ -169,7 +169,8 @@ def optimize(prices, profit, active_order, use_spread, optimizer):
         
         # Count the errors and log
         df_errors  = df_errors + 1
-        defs.log_error(e)
+        message = f"*** Error: Optimize failed: {e} ***"
+        defs.log_error(message)
         
         # After three consecutive errors halt
         if df_errors > 2:

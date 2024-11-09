@@ -9,7 +9,7 @@ import apprise, inspect, math, pprint, pytz, time
 
 # Load internal libraries
 from loader import load_config
-import defs, indicators, preload
+import defs, deribit, indicators, preload
 
 # Load config
 config = load_config()
@@ -605,20 +605,20 @@ def rate_limit(response):
     message = ""
     delay   = 5
     skip    = False
+    result  = ()
 
-    # Get code and error
-    try:
-        code    = int(response['error']['code'])
-        message = str(response['error']['message'])
-    except KeyError:
-        skip = True
+    # Get code, error and skip
+    result  = deribit.check_response(response)
+    code    = result[0]
+    message = result[1]
+    skip    = result[2]
 
     # Check for rate issues
     if not skip:
 
-        # Debug to stdout
-        if debug:
-            defs.announce(f"Debug: Encountered an error with code {code} and response: {message}")
+        # Report errors always except for order not found
+        if code != 10004:
+            defs.announce(f"Encountered an error with code '{code}', message '{message}' and full response is: {response}")
 
         # Rate issue
         if code == 10028:

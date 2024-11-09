@@ -384,6 +384,9 @@ def amend_quantity_sell(symbol, active_order, info):
     order      = {}
     error_code = 0
     exception  = ""
+    code       = 0
+    message    = ""
+    skip       = False
 
     # Output to stdout
     message = f"Trying to adjust quantity from {defs.format_number(active_order['qty'], info['basePrecision'])} "
@@ -408,15 +411,21 @@ def amend_quantity_sell(symbol, active_order, info):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        exception = str(e)
-        defs.announce(exception)
-        if "order_not_found" or "already_closed" in exception:
+        message = f"*** Error: Amend quantity sell failed: {e} ***"
+        defs.announce(message)
+
+    # Review response for errors
+    result  = deribit.check_response(response)
+    code    = result[0]
+    message = result[1]
+    skip    = result[2]
+
+    # Check response for errors
+    if not skip:
+        if message == "order_not_found" or message == "already_closed":
             # Order does not exist
             error_code = 1
-        elif "(ErrCode: 10001)" in exception:
-            # Could not modify quantity
-            error_code = 2
-        elif "modification_not_allowed" in exception:
+        elif message == "modification_not_allowed":
             # Could not modify order
             error_code = 10
         else:
@@ -424,9 +433,9 @@ def amend_quantity_sell(symbol, active_order, info):
             error_code = 100
 
     # Check API rate limit and log data if possible
-    if order:
-        order = defs.rate_limit(order)
-        defs.log_exchange(order, message)
+    if data:
+        data = defs.rate_limit(data)
+        defs.log_exchange(data, message)
 
     # Assign data to order
     order = data
@@ -473,6 +482,10 @@ def atp_helper(symbol, active_order, info):
         # Order does not support modification
         defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} order does not support modification", True, 0)
 
+    if amend_code == 11:
+        # Order does not support modification
+        defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} trigger price too high", True, 0)
+
     if amend_code == 100:
         # Critical error, let's log it and revert
         message = f"*** Warning S0011: Critical failure while trailing! {amend_error} ***"
@@ -495,6 +508,9 @@ def amend_trigger_price(symbol, active_order, info):
     order      = {}
     error_code = 0
     exception  = ""
+    code       = 0
+    message    = ""
+    skip       = False
     
     # Output to stdout
     message = f"Trying to adjusted trigger price from {defs.format_number(active_order['trigger'], info['tickSize'])} to "
@@ -520,14 +536,25 @@ def amend_trigger_price(symbol, active_order, info):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        exception = str(e)
-        defs.announce(exception)
-        if "order_not_found" or "already_closed" in exception:
+        message = f"*** Error: Amend trigger price failed: {e}"
+        defs.announce(message)
+        
+    # Review response for errors
+    result  = deribit.check_response(response)
+    code    = result[0]
+    message = result[1]
+    skip    = result[2]
+
+    # Check response for errors
+    if not skip:
+        if message == "order_not_found" or message == "already_closed":
             # Order does not exist
             error_code = 1
-        elif "modification_not_allowed" in exception:
+        elif message == "modification_not_allowed":
             # Could not modify order
             error_code = 10
+        elif message == "trigger_price_too_high":
+            error_code = 11
         else:
             # Any other error
             error_code = 100

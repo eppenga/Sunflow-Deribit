@@ -32,7 +32,8 @@ def get_ticker(symbol):
         response = requests.get(url, params=params)
         data     = response.json()
     except Exception as e:
-        defs.log_error(e)
+        message = f"*** Error: Getting ticker failed: {e} ***"
+        defs.log_error(message)
   
     # Check API rate limit and log data if possible
     if data:
@@ -83,7 +84,8 @@ def get_klines(symbol, interval, limit):
         response = requests.get(url, params=params)
         data     = response.json()
     except Exception as e:
-        defs.log_error(e)
+        message = f"*** Error: Getting klines failed: {e} ***"
+        defs.log_error(message)
 
     # Check API rate limit and log data if possible
     if data:
@@ -216,7 +218,8 @@ def get_info(symbol, spot, multiplier, compounding):
         response = requests.get(url, params=params)
         data     = response.json()
     except Exception as e:
-        defs.log_error(e)
+        message = f"*** Error: Getting info from exchange failed: {e} ***"
+        defs.log_error(message)
 
     # Check API rate limit and log data if possible
     if data:

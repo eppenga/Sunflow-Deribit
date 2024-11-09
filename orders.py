@@ -49,7 +49,8 @@ def history(orderId, orderLinkId, info):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        defs.log_error(e)
+        message = f"*** Error: Get order state for history failed: {e} ***"
+        defs.log_error(message)
 
     # Check API rate limit and log data if possible
     if data:
@@ -79,7 +80,8 @@ def history(orderId, orderLinkId, info):
             response = requests.get(url, headers=headers, params=params)
             data     = response.json()
         except Exception as e:
-            defs.log_error(e)
+            message = f"*** Error: Get order state by label for history failed: {e} ***"
+            defs.log_error(message)
 
         # Check API rate limit and log data if possible
         if data:
@@ -188,14 +190,12 @@ def cancel(symbol, orderId, orderLinkId):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        exception = str(e)
-        defs.announce(exception)
-        if "order_not_found" in exception:
-            # Order does not exist
-            error_code = 1
-        else:
-            # Any other error
-            error_code = 100        
+        message = f"*** Error: Cancel by label failed: {e} ***"
+        defs.announce(message)
+
+    # Did the order exist
+    if data['result'] == 0:
+        error_code = 1
         
     # Check API rate limit and log data if possible
     if data:
@@ -572,7 +572,8 @@ def get_wallet(coins):
         response = requests.get(url, headers=headers, params=params)
         data     = response.json()
     except Exception as e:
-        defs.log_error(e)
+        message = f"*** Error: Get account summary for wallet failed: {e} ***"
+        defs.log_error(message)
         
     # Check API rate limit and log data if possible
     if data:
