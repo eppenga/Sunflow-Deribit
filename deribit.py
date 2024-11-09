@@ -286,9 +286,7 @@ def check_response(data):
     debug = False
     
     # Initialize variables
-    code    = 0
-    message = ""
-    skip    = False
+    skip = False
     
     # Get code and error
     try:
