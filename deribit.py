@@ -293,7 +293,9 @@ def check_response(data):
         code    = int(data['error']['code'])
         message = str(data['error']['message'])
     except KeyError:
-        skip = True
+        code    = 0
+        message = ""
+        skip    = True
 
     # Return    
     return code, message, skip
