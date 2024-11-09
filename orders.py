@@ -118,7 +118,7 @@ def history(orderId, orderLinkId, info):
 def decode(order):
     
     # Debug
-    debug = False
+    debug = True
     
     # Debug to stdout
     if debug:
