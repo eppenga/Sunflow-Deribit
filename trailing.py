@@ -415,8 +415,7 @@ def amend_quantity_sell(symbol, active_order, info):
         defs.announce(message)
 
     # Review response for errors
-    result  = deribit.check_response(response)
-    code    = result[0]
+    result  = deribit.check_response(data)
     message = result[1]
     skip    = result[2]
 
@@ -540,8 +539,7 @@ def amend_trigger_price(symbol, active_order, info):
         defs.announce(message)
         
     # Review response for errors
-    result  = deribit.check_response(response)
-    code    = result[0]
+    result  = deribit.check_response(data)
     message = result[1]
     skip    = result[2]
 

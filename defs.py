@@ -591,7 +591,7 @@ def decide_buy(indicators_advice, use_indicators, spread_advice, use_spread, ord
     return can_buy, message, indicators_advice
 
 # Deal with API rate limit
-def rate_limit(response):
+def rate_limit(data):
       
     # Debug
     debug = False
@@ -608,7 +608,7 @@ def rate_limit(response):
     result  = ()
 
     # Get code, error and skip
-    result  = deribit.check_response(response)
+    result  = deribit.check_response(data)
     code    = result[0]
     message = result[1]
     skip    = result[2]
@@ -618,7 +618,7 @@ def rate_limit(response):
 
         # Report errors always except for order not found
         if code != 10004:
-            defs.announce(f"Encountered an error with code '{code}', message '{message}' and full response is: {response}")
+            defs.announce(f"Encountered an error with code '{code}', message '{message}' and full response is: {data}")
 
         # Rate issue
         if code == 10028:
@@ -626,7 +626,7 @@ def rate_limit(response):
             time.sleep(delay)
     
     # Return cleaned response
-    return response
+    return data
 
 # Report ticker info to stdout
 def report_ticker(spot, new_spot, rise_to, active_order, all_buys, info):
