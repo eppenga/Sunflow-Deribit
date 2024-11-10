@@ -177,7 +177,7 @@ def check_spike(symbol, spot, active_order, order, all_buys, info):
 def calculate_revenue(transaction, all_sells, spot, info):
     
     # Debug and speed
-    debug = True
+    debug = False
     speed = True
     stime = defs.now_utc()[4]
     
