@@ -619,7 +619,9 @@ def rate_limit(data):
     # Check for rate issues
     if not skip:
 
-        # Report errors always except for order not found
+        # Report errors always except for:
+        # - order not found
+        # - trigger price too high
         if code not in (10004, 10034):
             defs.announce(f"Encountered an error with code '{code}', message '{message}' and full response is: {data}")
 
