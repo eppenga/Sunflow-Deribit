@@ -500,6 +500,7 @@ def sell(symbol, spot, active_order, prices, info):
     # Initialize variables
     data  = {}
     order = {}
+    error_code = 0
 
     # Output to stdout
     defs.announce("*** SELL SELL SELL! ***")
