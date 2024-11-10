@@ -572,7 +572,7 @@ def sell(symbol, spot, active_order, prices, info):
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
-        return active_order, all_buys, info
+        return active_order
         
     # Check API rate limit and log data if possible
     if data:
