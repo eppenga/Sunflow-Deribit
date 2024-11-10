@@ -540,7 +540,7 @@ def sell(symbol, spot, active_order, prices, info):
         data     = response.json()
     except Exception as e:
 
-        # Sell order failed, reset active_order and return
+        # Sell order failed, log, reset active_order and return
         message = f"*** Warning S0008a: Sell order failed due to error, trailing stopped! {e} ***"
         defs.log_error(message)
         active_order['active'] = False
@@ -567,8 +567,8 @@ def sell(symbol, spot, active_order, prices, info):
     # Take action based on response
     if error_code != 0:
 
-        # Buy order failed, log, reset active_order and return
-        message = f"*** Warning S0008b: Buy order failed when placing, trailing stopped! {e} ***"
+        # Sell order failed, log, reset active_order and return
+        message = f"*** Warning S0008b: Sell order failed when placing, trailing stopped! {e} ***"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
