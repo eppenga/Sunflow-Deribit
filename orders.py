@@ -422,12 +422,39 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     except Exception as e:
         
         # Buy order failed, log, reset active_order and return
-        message = f"*** Warning S0007: Buy order failed when placing, trailing stopped! {e} ***"
+        message = f"*** Warning S0007a: Buy order failed when placing, trailing stopped! {e} ***"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
         return active_order, all_buys, info
         
+    # Review response for errors
+    result  = deribit.check_response(data)
+    message = result[1]
+    skip    = result[2]
+
+    # Check response for errors
+    if not skip:
+        if message == "order_not_found" or message == "already_closed":
+            error_code = 1
+        elif message == "trigger_price_too_high":
+            error_code = 11
+        elif message == "trigger_price_too_low":
+            error_code = 12
+        else:
+            # Any other error
+            error_code = 100
+
+    # Take action based on response
+    if error_code != 0:
+
+        # Buy order failed, log, reset active_order and return
+        message = f"*** Warning S0007b: Buy order failed when placing, trailing stopped! {e} ***"
+        defs.log_error(message)
+        active_order['active'] = False
+        if speed: defs.announce(defs.report_exec(stime))    
+        return active_order, all_buys, info
+
     # Check API rate limit and log data if possible
     if data:
         data = defs.rate_limit(data)
@@ -447,14 +474,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     order = deribit.prep_decode(data)
       
     # Get the transaction
-    transaction = decode(order)
-    
-    # Check the transaction
-    if error_code == 1:
-        active_order['active'] = False
-        defs.announce("*** Warning: Buy order failed because it disappeared from exchange, trailing stopped! ***")
-        if speed: defs.announce(defs.report_exec(stime))    
-        return active_order, all_buys, info
+    transaction = decode(order)   
             
     # Change the status of the transaction
     transaction['status'] = "Open"
@@ -520,11 +540,38 @@ def sell(symbol, spot, active_order, prices, info):
     except Exception as e:
 
         # Sell order failed, reset active_order and return
-        message = f"*** Warning S0008: Sell order failed due to error, trailing stopped! {e} ***"
+        message = f"*** Warning S0008a: Sell order failed due to error, trailing stopped! {e} ***"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))        
         return active_order
+
+    # Review response for errors
+    result  = deribit.check_response(data)
+    message = result[1]
+    skip    = result[2]
+
+    # Check response for errors
+    if not skip:
+        if message == "order_not_found" or message == "already_closed":
+            error_code = 1
+        elif message == "trigger_price_too_high":
+            error_code = 11
+        elif message == "trigger_price_too_low":
+            error_code = 12
+        else:
+            # Any other error
+            error_code = 100
+
+    # Take action based on response
+    if error_code != 0:
+
+        # Buy order failed, log, reset active_order and return
+        message = f"*** Warning S0008b: Buy order failed when placing, trailing stopped! {e} ***"
+        defs.log_error(message)
+        active_order['active'] = False
+        if speed: defs.announce(defs.report_exec(stime))    
+        return active_order, all_buys, info
         
     # Check API rate limit and log data if possible
     if data:

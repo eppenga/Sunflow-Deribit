@@ -546,10 +546,8 @@ def amend_trigger_price(symbol, active_order, info):
     # Check response for errors
     if not skip:
         if message == "order_not_found" or message == "already_closed":
-            # Order does not exist
             error_code = 1
         elif message == "modification_not_allowed":
-            # Could not modify order
             error_code = 10
         elif message == "trigger_price_too_high":
             error_code = 11
