@@ -380,13 +380,13 @@ def amend_quantity_sell(symbol, active_order, info):
     stime = defs.now_utc()[4]
 
     # Initialize variables
-    data       = {}
-    order      = {}
-    error_code = 0
-    exception  = ""
-    code       = 0
-    message    = ""
-    skip       = False
+    data             = {}
+    order            = {}
+    result           = ()
+    error_code       = 0
+    exception        = ""
+    response_message = ""
+    response_skip    = False
 
     # Output to stdout
     message = f"Trying to adjust quantity from {defs.format_number(active_order['qty'], info['basePrecision'])} "
@@ -415,17 +415,15 @@ def amend_quantity_sell(symbol, active_order, info):
         defs.announce(message)
 
     # Review response for errors
-    result  = deribit.check_response(data)
-    message = result[1]
-    skip    = result[2]
+    result           = deribit.check_response(data)
+    response_message = result[1]
+    response_skip    = result[2]
 
     # Check response for errors
-    if not skip:
-        if message == "order_not_found" or message == "already_closed":
-            # Order does not exist
+    if not response_skip:
+        if response_message == "order_not_found" or response_message == "already_closed":
             error_code = 1
-        elif message == "modification_not_allowed":
-            # Could not modify order
+        elif response_message == "modification_not_allowed":
             error_code = 10
         else:
             # Any other error
@@ -485,6 +483,10 @@ def atp_helper(symbol, active_order, info):
         # Order does not support modification
         defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} trigger price too high", True, 0)
 
+    if amend_code == 12:
+        # Order does not support modification
+        defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} trigger price too low", True, 0)
+
     if amend_code == 100:
         # Critical error, let's log it and revert
         message = f"*** Warning S0011: Critical failure while trailing! {amend_error} ***"
@@ -503,13 +505,13 @@ def amend_trigger_price(symbol, active_order, info):
     stime = defs.now_utc()[4]
 
     # Initialize variables
-    data       = {}
-    order      = {}
-    error_code = 0
-    exception  = ""
-    code       = 0
-    message    = ""
-    skip       = False
+    data             = {}
+    order            = {}
+    result           = ()
+    error_code       = 0
+    exception        = ""
+    response_message = ""
+    response_skip    = False
     
     # Output to stdout
     message = f"Trying to adjusted trigger price from {defs.format_number(active_order['trigger'], info['tickSize'])} to "
@@ -539,18 +541,20 @@ def amend_trigger_price(symbol, active_order, info):
         defs.announce(message)
         
     # Review response for errors
-    result  = deribit.check_response(data)
-    message = result[1]
-    skip    = result[2]
+    result           = deribit.check_response(data)
+    response_message = result[1]
+    response_skip    = result[2]
 
     # Check response for errors
-    if not skip:
-        if message == "order_not_found" or message == "already_closed":
+    if not response_skip:
+        if response_message == "order_not_found" or response_message == "already_closed":
             error_code = 1
-        elif message == "modification_not_allowed":
+        elif response_message == "modification_not_allowed":
             error_code = 10
-        elif message == "trigger_price_too_high":
+        elif response_message == "trigger_price_too_high":
             error_code = 11
+        elif response_message == "trigger_price_too_low":
+            error_code = 12
         else:
             # Any other error
             error_code = 100

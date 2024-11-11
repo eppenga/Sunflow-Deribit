@@ -604,29 +604,29 @@ def rate_limit(data):
         defs.announce("Debug: Checking exchange response for rate limit issues")
     
     # Initialize variables
-    code    = 0
-    message = ""
-    delay   = 5
-    skip    = False
-    result  = ()
+    delay            = 5
+    result           = ()
+    response_code    = 0
+    response_message = ""
+    response_skip    = False
 
     # Get code, error and skip
     result  = deribit.check_response(data)
-    code    = result[0]
-    message = result[1]
-    skip    = result[2]
+    response_code    = result[0]
+    response_message = result[1]
+    response_skip    = result[2]
 
     # Check for rate issues
-    if not skip:
+    if not response_skip:
 
         # Report errors always except for:
         # - order not found
         # - trigger price too high
-        if code not in (10004, 10034):
-            defs.announce(f"Encountered an error with code '{code}', message '{message}' and full response is: {data}")
+        if response_code not in (10004, 10034):
+            defs.announce(f"Encountered an error with code '{response_code}', message '{response_message}' and full response is: {data}")
 
         # Rate issue
-        if code == 10028:
+        if response_code == 10028:
             defs.announce(f"*** WARNING: API RATE LIMIT HIT, DELAYING SUNFLOW {delay} SECONDS! ***", True, 1)
             time.sleep(delay)
     

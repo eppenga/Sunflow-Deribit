@@ -376,9 +376,12 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     stime = defs.now_utc()[4]
     
     # Initialize variables
-    data      = {}
-    order     = {}
-    error_code = 0
+    data             = {}
+    order            = {}
+    error_code       = 0
+    result           = ()
+    response_message = ""
+    response_skip    = False   
 
     # Output to stdout
     defs.announce("*** BUY BUY BUY! ***")
@@ -430,16 +433,16 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
         
     # Review response for errors
     result  = deribit.check_response(data)
-    message = result[1]
-    skip    = result[2]
+    response_message = result[1]
+    response_skip    = result[2]
 
     # Check response for errors
-    if not skip:
-        if message == "order_not_found" or message == "already_closed":
+    if not response_skip:
+        if response_message == "order_not_found" or response_message == "already_closed":
             error_code = 1
-        elif message == "trigger_price_too_high":
+        elif response_message == "trigger_price_too_high":
             error_code = 11
-        elif message == "trigger_price_too_low":
+        elif response_message == "trigger_price_too_low":
             error_code = 12
         else:
             # Any other error
@@ -449,7 +452,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     if error_code != 0:
 
         # Buy order failed, log, reset active_order and return
-        message = f"*** Warning S0007b: Buy order failed when placing, trailing stopped! {e} ***"
+        message = f"*** Warning S0007b: Buy order failed when placing, trailing stopped! {response_message} ***"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
@@ -498,9 +501,11 @@ def sell(symbol, spot, active_order, prices, info):
     stime = defs.now_utc()[4]
 
     # Initialize variables
-    data  = {}
-    order = {}
-    error_code = 0
+    data             = {}
+    error_code       = 0
+    result           = ()
+    response_message = ""
+    response_skip    = False
 
     # Output to stdout
     defs.announce("*** SELL SELL SELL! ***")
@@ -548,17 +553,17 @@ def sell(symbol, spot, active_order, prices, info):
         return active_order
 
     # Review response for errors
-    result  = deribit.check_response(data)
-    message = result[1]
-    skip    = result[2]
+    result   = deribit.check_response(data)
+    response_message = result[1]
+    response_skip    = result[2]
 
     # Check response for errors
-    if not skip:
-        if message == "order_not_found" or message == "already_closed":
+    if not response_skip:
+        if response_message == "order_not_found" or response_message == "already_closed":
             error_code = 1
-        elif message == "trigger_price_too_high":
+        elif response_message == "trigger_price_too_high":
             error_code = 11
-        elif message == "trigger_price_too_low":
+        elif response_message == "trigger_price_too_low":
             error_code = 12
         else:
             # Any other error
@@ -568,7 +573,7 @@ def sell(symbol, spot, active_order, prices, info):
     if error_code != 0:
 
         # Sell order failed, log, reset active_order and return
-        message = f"*** Warning S0008b: Sell order failed when placing, trailing stopped! {e} ***"
+        message = f"*** Warning S0008b: Sell order failed when placing, trailing stopped! {response_message} ***"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
@@ -582,7 +587,7 @@ def sell(symbol, spot, active_order, prices, info):
     # Get order ID, custom ID is already assigned at initialize
     active_order['orderid'] = data['result']['order']['order_id']
     
-    # Output to stdout and Apprise
+    # Output to stdout
     message = f"Sell order opened for {defs.format_number(active_order['qty'], info['basePrecision'])} {info['baseCoin']} "
     message = message + f"at trigger price {defs.format_number(active_order['trigger'], info['tickSize'])} {info['quoteCoin']} "
     message = message + f"with order ID {active_order['orderid']}"
