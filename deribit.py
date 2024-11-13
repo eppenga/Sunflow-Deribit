@@ -68,7 +68,11 @@ def extract_token_data(data, token):
         if token_stuck < 3:
 
             # Throw a warning and get a new token
-            message = f"*** Warning S0002a: Authentication failed for the {token_stuck + 1} time: {data} ***"
+            message = f"*** Warning S0002a: Authentication failed for the {token_stuck + 1} time"
+            if debug:
+                message = message + f": {data} ***"
+            else:
+                message = message + " ***"
             defs.log_error(message)
             
             # Get a new token

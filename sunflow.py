@@ -763,7 +763,7 @@ print("\n** Deribit **")
 print(f"Authentication successful, expiration at Unix epoch {config.token_expiration} ms")
 if config.wallet_report:
     print("\n** Wallet **")
-    print(f"Bot value       : {wallet_data[0]} {info['quoteCoin']}")
+    print(f"Total bot value : {wallet_data[0]} {info['quoteCoin']}")
     print(f"Quote (exchange): {wallet_data[2]} {info['quoteCoin']}")
     print(f"Base (exchange) : {wallet_data[1]} {info['baseCoin']}")
     print(f"Base (database) : {wallet_data[3]} {info['baseCoin']}")

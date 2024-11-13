@@ -393,10 +393,8 @@ def amend_quantity_sell(symbol, active_order, info):
     message = message + f"to {defs.format_number(active_order['qty_new'], info['basePrecision'])} {info['baseCoin']}"
     defs.announce(message)
 
-    # Authenticate Deribit
+    # Amend order
     deribit.authenticate()
-
-    # Ammend order
     message = defs.announce("session: amend_order")
     try:
         url     = config.api_url + "/private/edit"
@@ -517,11 +515,9 @@ def amend_trigger_price(symbol, active_order, info):
     message = f"Trying to adjusted trigger price from {defs.format_number(active_order['trigger'], info['tickSize'])} to "
     message = message + f"{defs.format_number(active_order['trigger_new'], info['tickSize'])} {info['quoteCoin']}"
     defs.announce(message)
-
-    # Authenticate Deribit
-    deribit.authenticate()
-    
+   
     # Amend order
+    deribit.authenticate()
     message = defs.announce("session: /private/edit")
     try:
         url     = config.api_url + "/private/edit"
