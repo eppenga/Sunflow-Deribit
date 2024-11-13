@@ -733,7 +733,8 @@ if config.database_rebalance:
 
 # Preload wallet, quote and base currency to stdout
 if config.wallet_report:
-    compounding['now'] = orders.report_wallet(spot, all_buys, info)[0]
+    wallet_data        = orders.report_wallet(spot, all_buys, info)
+    compounding['now'] = wallet_data[0]
 
 # Preload compounding
 if compounding['enabled']:
@@ -741,27 +742,31 @@ if compounding['enabled']:
 
 
 ## TESTS ##
-print("\n*** DATA AFTER PRELOADING ***")
+print("\n*** Preloading report ***")
 
 print("\n** Ticker **")
-pprint.pprint(ticker)
+print(f"Symbol    : {ticker['symbol']}")
+print(f"Last price: {ticker['lastPrice']} {info['quoteCoin']}")
+print(f"Updated   : {ticker['time']} ms")
 
 print("\n** Spot **")
-pprint.pprint(spot)
+print(f"Spot price : {spot} {info['quoteCoin']}")
 
 print("\n** Info **")
+print("Instrument information:")
 pprint.pprint(info)
 
 #print("\n** Klines **")
 #pprint.pprint(klines)
 
 print("\n** Deribit **")
-print(f"Authentication successful, expiration at Unix epoch {config.token_expiration} ms\n")
+print(f"Authentication successful, expiration at Unix epoch {config.token_expiration} ms")
 if config.wallet_report:
     print("\n** Wallet **")
-    temp_wallet = orders.report_wallet(spot, all_buys, info)
-    print("(bot value, base coins exchange, quote coins exchange, base coins database, out of sync)")
-    pprint.pprint(temp_wallet)
+    print(f"Bot value      : {wallet_data[0]} {info['quoteCoin']}")
+    print(f"Base (exchange): {wallet_data[1]} {info['baseCoin']}")
+    print(f"Base (database): {wallet_data[2]} {info['baseCoin']}")
+    print(f"Out of sync    : {wallet_data[3]} {info['baseCoin']}")
 
 #exit()
 
