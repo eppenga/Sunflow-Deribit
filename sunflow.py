@@ -339,7 +339,7 @@ def handle_ticker(message):
         frame_summary = tb_info[-1]
         filename = frame_summary.filename
         line = frame_summary.lineno
-        defs.announce(f"*** Error: Failure in {filename} on line {line}: {e} ***")
+        defs.announce(f"*** Warning: Exception in {filename} on line {line}: {e} ***")
 
     # Always set new spot price and unlock function
     spot = ticker['lastPrice']
@@ -408,7 +408,7 @@ def handle_kline(message, interval):
         frame_summary = tb_info[-1]
         filename = frame_summary.filename
         line = frame_summary.lineno
-        defs.announce(f"*** Error: Failure in {filename} on line {line}: {e} ***")
+        defs.announce(f"*** Warning: Exception in {filename} on line {line}: {e} ***")
 
     # Report execution time
     if speed: defs.announce(defs.report_exec(stime))
@@ -515,7 +515,7 @@ def handle_orderbook(message):
         frame_summary = tb_info[-1]
         filename = frame_summary.filename
         line = frame_summary.lineno
-        defs.announce(f"*** Error: Failure in {filename} on line {line}: {e} ***")
+        defs.announce(f"*** Warning: Exception in {filename} on line {line}: {e} ***")
     
     # Report execution time
     if speed: defs.announce(defs.report_exec(stime))

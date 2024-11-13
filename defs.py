@@ -192,15 +192,19 @@ def log_error(exception):
     # Create message
     message = timestamp + f"{filename}: {functionname}: {exception}"
 
+    # Just a warning
+    if "Warning" in exception:
+        halt_execution = False
+
     # Authenication error, not possible to create new token
     if "S0001" in exception:
         halt_execution = True
 
-    # Authenication warning, did not get new token (temporal failure)
+    # Authenication warning, did not get new token (temporal)
     if "S0002a" in exception:
         halt_execution = False
 
-    # Authenication error, not possible to get new token
+    # Authenication error, not possible to get new token (permanent)
     if "S0002b" in exception:
         halt_execution = True
 
@@ -258,7 +262,7 @@ def log_error(exception):
         file.write(message + "\n")
     
     # Output to stdout
-    defs.announce(f"Exception: {exception} | File: {filename} | Function: {functionname}")
+    defs.announce(f"{exception} | File: {filename} | Function: {functionname}")
     
     # Terminate hard
     if halt_execution:
@@ -622,8 +626,9 @@ def rate_limit(data):
         # Report errors always except for:
         # - order not found
         # - trigger price too high
-        if response_code not in (10004, 10034):
-            defs.announce(f"Encountered an error with code '{response_code}', message '{response_message}' and full response is: {data}")
+        # - trigger price too low
+        if response_code not in (10004, 10034, 10035):
+            defs.announce(f"*** Unexpected Exception: Code '{response_code}', message '{response_message}' and full response is: {data} ***")
 
         # Rate issue
         if response_code == 10028:

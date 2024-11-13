@@ -147,7 +147,7 @@ def refresh_token(token):
     except Exception as e:
         
         # Throw warning
-        message = f"*** Warning S0002: Warning when refreshing token: {e} ***"
+        message = f"*** Warning S0002a: Warning when refreshing token: {e} ***"
         defs.log_error(message)
         
         # Get new token
