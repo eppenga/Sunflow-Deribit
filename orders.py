@@ -590,7 +590,7 @@ def sell(symbol, spot, active_order, prices, info):
     # Output to stdout
     message = f"Sell order opened for {defs.format_number(active_order['qty'], info['basePrecision'])} {info['baseCoin']} "
     message = message + f"at trigger price {defs.format_number(active_order['trigger'], info['tickSize'])} {info['quoteCoin']} "
-    message = message + f"with order ID {active_order['orderid']}"
+    message = message + f"with order ID '{active_order['orderid']}'"
     if debug: message = message + f" and custom ID '{active_order['linkid']}'"
     defs.announce(message, True)
 
