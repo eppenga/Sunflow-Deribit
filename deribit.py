@@ -64,6 +64,9 @@ def extract_token_data(data, token):
         defs.announce(f"Deribit {token['action']} authentication successful, valid for {token['valid']} ms")
         
     else:
+        # One more time it's stuck
+        token_stuck = token_stuck + 1
+        
         # Get a new token or fail
         if token_stuck < 3:
 
