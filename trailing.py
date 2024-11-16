@@ -101,10 +101,14 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
             def report_wallet_task():
                 compounding['now'] = orders.report_wallet(spot, all_buys, info)[0]
             
-            # Report wallet, quote and base currency to stdout and adjust compounding (threat)
+            # Report wallet, quote and base currency to stdout and adjust compounding (threaded or not)
+            threaded = False    # For Deribit we do not threat
             if config.wallet_report:
-                wallet_thread = threading.Thread(target=report_wallet_task)
-                wallet_thread.start()
+                if threaded:
+                    wallet_thread = threading.Thread(target=report_wallet_task)
+                    wallet_thread.start()
+                else:
+                    compounding['now'] = orders.report_wallet(spot, all_buys, info)[0]
                             
             # Report compounding, only possible when wallet reporting is active, see config file
             if compounding['enabled']:
