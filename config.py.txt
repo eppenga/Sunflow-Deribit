@@ -5,7 +5,7 @@
 ## CHANGE TO YOUR LIKING
 
 # Default values
-symbol              = "XRPUSDC"    # Symbol bot used for trading
+symbol              = "XRP_USDC"    # Symbol bot used for trading
 interval_1          = 1            # Klines timeframe default interval in minutes
 interval_2          = 3            # Klines timeframe first confirmation interval, set to 0 if you do not want to use this
 interval_3          = 5            # Klines timeframe second confirmation interval, set to 0 if you do not want to use this
