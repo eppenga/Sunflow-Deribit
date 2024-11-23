@@ -750,7 +750,7 @@ print(f"Last price: {ticker['lastPrice']} {info['quoteCoin']}")
 print(f"Updated   : {ticker['time']} ms")
 
 print("\n** Spot **")
-print(f"Spot price : {spot} {info['quoteCoin']}")
+print(f"Spot price: {spot} {info['quoteCoin']}")
 
 print("\n** Info **")
 print("Instrument information:")
