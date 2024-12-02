@@ -262,7 +262,7 @@ ax1.tick_params(axis='x', rotation=45)
 # Add the bar chart for trade counts on a second y-axis
 ax2 = ax1.twinx()
 color_trades = 'tab:green'
-ax2.set_ylabel(f'{info["baseCoin"]} sold (profit per 1 {info['baseCoin']} sold)', color=color_trades)
+ax2.set_ylabel(f'{info["baseCoin"]} sold (profit per 1 {info["baseCoin"]} sold)', color=color_trades)
 bars = ax2.bar(combined_df['date'], combined_df['trade_count'], color=color_trades, alpha=0.6, label='Trades')
 ax2.tick_params(axis='y', labelcolor=color_trades)
 
