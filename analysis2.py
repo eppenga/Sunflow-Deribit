@@ -38,7 +38,7 @@ config_module_name = config_path.stem
 config = importlib.import_module(config_module_name)
 
 # Debug
-debug = False
+debug = True
 
 # Calculate time elements
 def calc_time(df):
@@ -226,7 +226,7 @@ filtered_df_revenue = df_revenue[df_revenue['createdTime'] >= date_threshold]
 
 # Group the filtered revenue and trade data by date 
 profit_per_day = filtered_df_revenue.groupby('date')['revenue'].sum().reset_index()
-trade_counts_per_day = df_revenue.groupby('date').size().reset_index(name='trade_count')
+basecoin_sold_per_day = df_revenue.groupby('date')['qty'].sum().reset_index(name='trade_count')
 
 # Add price bins for outstanding orders histogram
 df_all_buys['price_bin'] = pd.cut(df_all_buys['avgPrice'], bins=20)
@@ -234,7 +234,7 @@ price_bins = df_all_buys.groupby('price_bin', observed=False)['cumExecValue'].su
 price_bins['bin_mid'] = price_bins['price_bin'].apply(lambda x: x.mid)
 
 # Combine profit per day and trade counts for combined graph
-combined_df = pd.merge(profit_per_day, trade_counts_per_day, on='date', how='inner')
+combined_df = pd.merge(profit_per_day, basecoin_sold_per_day, on='date', how='inner')
 
 # Calculate average profit per trade
 combined_df['avg_profit_per_trade'] = combined_df['revenue'] / combined_df['trade_count']
@@ -262,7 +262,7 @@ ax1.tick_params(axis='x', rotation=45)
 # Add the bar chart for trade counts on a second y-axis
 ax2 = ax1.twinx()
 color_trades = 'tab:green'
-ax2.set_ylabel('Number of Trades (average profit / trade)', color=color_trades)
+ax2.set_ylabel(f'{info['baseCoin']} sold (profit per 1 {info['baseCoin']} sold)', color=color_trades)
 bars = ax2.bar(combined_df['date'], combined_df['trade_count'], color=color_trades, alpha=0.6, label='Trades')
 ax2.tick_params(axis='y', labelcolor=color_trades)
 

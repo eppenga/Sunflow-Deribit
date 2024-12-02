@@ -95,7 +95,7 @@ def history(orderId, orderLinkId, info):
                 order          = data
                 order_received = True
             else:
-                message = f"*** Error S0012: Order dissappeared from exchange without cause, order ID '{orderId}' and custom ID '{orderLinkId} ***'"
+                message = f"*** Error S0012: Order disappeared from exchange, order ID is '{orderId}' and custom ID is '{orderLinkId} ***'"
                 defs.log_error(message)
         else:
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
