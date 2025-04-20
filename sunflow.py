@@ -187,6 +187,12 @@ lock_ticker['time']                  = defs.now_utc()[4]
 lock_ticker['delay']                 = 5000
 lock_ticker['enabled']               = False
 
+# Uptime ping
+uptime_ping                          = {}
+uptime_ping['time']                  = defs.now_utc()[4]
+uptime_ping['delay']                 = 10000
+uptime_ping['enabled']               = True
+
 # Periodic tasks
 periodic                             = {}
 periodic['time']                     = defs.now_utc()[4]
@@ -795,6 +801,18 @@ def periodic_tasks():
     # Return
     return
 
+# Run tasks periodically
+def ping_message():
+    
+    # Debug
+    debug = False
+
+    # Output to stdout
+    if uptime_ping['enabled']:
+        defs.announce(f"Ping, Sunflow is up and running, received no ticker data since {uptime_ping['delay']} ms")
+    
+    # Return
+    return
 
 ### Websockets ###
 
@@ -890,8 +908,20 @@ async def call_api(symbol, intervals):
             # Get data from exchange
             while websocket.open and not defs.halt_sunflow:
                 try:
-                    #current_time = defs.now_utc()[4]    # *** CHECK *** How to fix simulated tickers??
-                    #simulated    = simulated_ticker()                    
+                    current_time = defs.now_utc()[4]
+                    #simulated    = simulated_ticker()      # *** CHECK *** How to fix simulated tickers??
+                    
+                    # Uptime ping
+                    if current_time - uptime_ping['time'] > uptime_ping['delay']:
+                        uptime_ping['time'] = current_time
+                        ping_message()                      
+
+                    # Periodic tasks
+                    if current_time - periodic['time'] > periodic['delay']:
+                        periodic['time'] = current_time
+                        periodic_tasks()
+
+                    # Get response                    
                     response      = await websocket.recv()
                     response_data = json.loads(response)
                     channel       = response_data.get('params', {}).get('channel')

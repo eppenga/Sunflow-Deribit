@@ -38,7 +38,7 @@ config_module_name = config_path.stem
 config = importlib.import_module(config_module_name)
 
 # Debug
-debug = True
+debug = False
 
 # Calculate time elements
 def calc_time(df):
