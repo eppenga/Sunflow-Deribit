@@ -217,7 +217,7 @@ def handle_ticker(message):
     try:
    
         # Declare some variables global
-        global spot, ticker, profit, active_order, all_buys, all_sells, prices, indicators_advice, lock_ticker, use_spread, optimizer, compounding, info
+        global spot, ticker, profit, active_order, all_buys, all_sells, prices, indicators_advice, lock_ticker, use_spread, optimizer, compounding, uptime_ping, info
 
         # Initialize variables
         ticker              = {}
@@ -226,7 +226,7 @@ def handle_ticker(message):
         lock_ticker['time'] = current_time
         
         # Decoded message and get latest ticker
-        ticker['time']      =   int(message['params']['data']['timestamp'])
+        ticker['time']      = int(message['params']['data']['timestamp'])
         ticker['lastPrice'] = float(message['params']['data']['price'])
         ticker['lastPrice'] = defs.round_number(ticker['lastPrice'], info['tickSize'])   # Deribit does not deliver prices occording to tickSize via websocket!
 
@@ -281,6 +281,9 @@ def handle_ticker(message):
             active_order['qty_new'] = result[1]
             can_sell                = result[2]
             rise_to                 = result[3]
+
+            # Reset uptime notice
+            uptime_ping['time'] = current_time
 
             # Output to stdout "Price went up/down from ..."
             message = defs.report_ticker(spot, new_spot, rise_to, active_order, all_buys, info)
