@@ -65,8 +65,23 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
         stuck['check'] = True
         
         # Has trailing endend, check if order does still exist
-        order = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)
+        result       = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)
+        order        = result[0]
+        error_code   = result[1]
+        
+        # Check if order does not exist anymore (Deribit sometimes loses orders)
+        if error_code == 2:
 
+            # Reset trailing order
+            active_order['active'] = False
+            # Remove order from exchange
+            orders.cancel(symbol, active_order['orderid'], active_order['linkid'])
+            # Rebalance to be safe
+            all_buys = orders.rebalance(all_buys, info)
+            # Remove order from all buys
+            if active_order['side'] == "Buy":
+                all_buys = database.remove(active_order['orderid'], all_buys, info)
+            
         # Check if trailing order is filled, if so reset counters and close trailing process
         if order['orderStatus'] == "Filled":
             
@@ -230,7 +245,7 @@ def close_trail(active_order, all_buys, all_sells, spot, info):
     active_order['active'] = False
     
     # Close the transaction on either buy or sell trailing order
-    transaction = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)
+    transaction = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)[0]
     transaction['status'] = "Closed"
     if debug:
         defs.announce(f"Debug: {active_order['side']} order")

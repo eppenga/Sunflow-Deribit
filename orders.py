@@ -91,12 +91,13 @@ def history(orderId, orderLinkId, info):
         # Order response
         if response.status_code == 200:
             if data['result'] != []:
-                data['result'] = data['result'][0]   # labels are not unique at Deribit, for Sunflow they are
+                data['result'] = data['result'][0]   # labels are not unique at Deribit, for Bybit they are
                 order          = data
                 order_received = True
             else:
-                message = f"*** Error S0012: Order disappeared from exchange, order ID is '{orderId}' and custom ID is '{orderLinkId} ***'"
+                message = f"*** Warning S0012: Order disappeared from exchange, order ID is '{orderId}' and custom ID is '{orderLinkId} ***'"
                 defs.log_error(message)
+                error_code = 2
         else:
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
             defs.log_error(message)
@@ -244,13 +245,18 @@ def transaction_from_order(order):
 
 # Turn an order from the exchange into a properly formatted transaction after the order already exists
 def transaction_from_id(orderId, orderLinkId, info):
+
+    # Initialize variables
+    result        = ()
     
     # Do logic
-    order_history = history(orderId, orderLinkId, info)[0]
+    result        = history(orderId, orderLinkId, info)
+    order_history = result[0]
+    error_code    = result[1]
     transaction   = decode(order_history)
 
     # Return transaction
-    return transaction
+    return transaction, error_code
 
 # Initialize active order for initial buy or sell
 def set_trigger(spot, active_order, info):

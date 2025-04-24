@@ -316,13 +316,13 @@ def check_orders(transactions, info):
             temp_transaction = transaction
             if transaction['status'] != "Closed":
                 defs.announce("Performing an additional check on order status via exchange")
-                temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)
+                temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)[0]
         else:
             # Check all order on exchange regardless of status
             message = f"Checking order on exchange: '{transaction['orderId']}'"
             if debug: message = message + f"'{transaction['orderLinkId']}'"
             defs.announce(message)
-            temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)
+            temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)[0]
 
         # Assign status, if not filled just disregard
         if "Filled" in temp_transaction['orderStatus']:

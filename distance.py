@@ -275,8 +275,8 @@ def distance_wave(active_order, prices, price_distance, prevent=True):
     debug = False
 
     # Time calculations
-    latest_time = prices['time'][-1]                     # Get the latest time
-    span = latest_time - config.wave_timeframe   # timeframe in milliseconds
+    latest_time = prices['time'][-1]                # Get the latest time
+    span = latest_time - config.wave_timeframe      # timeframe in milliseconds
 
     # Get the closest index in the time {timeframe}
     closest_index = defs.get_closest_index(prices, span)

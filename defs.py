@@ -248,9 +248,9 @@ def log_error(exception):
     if "S0011" in exception:
         halt_execution = False
 
-    # Order history, order disappeared without reason
+    # Order history warning, order disappeared without reason
     if "S0012" in exception:
-        halt_execution = True
+        halt_execution = False
        
     # Error: Dataframe failure
     if ("(30908)" in exception) or ("Length of values" in exception) or ("All arrays must be of the same length" in exception):
