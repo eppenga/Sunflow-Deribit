@@ -793,7 +793,7 @@ defs.announce(f"Sunflow started at {time_output}", True, 1)
 ### Periodic tasks ###
 
 # Run tasks periodically
-def periodic_tasks():
+def periodic_tasks(current_time):
     
     # Debug
     debug = False
@@ -805,14 +805,17 @@ def periodic_tasks():
     return
 
 # Run tasks periodically
-def ping_message():
+def ping_message(current_time):
     
     # Debug
     debug = False
 
+    # Delay
+    delay = current_time - uptime_ping['time']
+
     # Output to stdout
     if uptime_ping['enabled']:
-        defs.announce(f"Ping, Sunflow is up and running, received no ticker data since {uptime_ping['delay']} ms")
+        defs.announce(f"Ping, Sunflow is up and running, last message was {delay} ms ago")
     
     # Return
     return
@@ -858,7 +861,7 @@ async def connect_websocket():
             defs.announce("Connected to exchange websocket")
             return websocket
         except Exception as e:
-            message = f"*** Error S0003: Exchange websocket error: {e} ***"
+            message = f"*** Error S0003: Exchange websocket error ***\n{e}"
             defs.log_error(message)            
             defs.announce("Reconnecting to exchange in 5 seconds...")
             await asyncio.sleep(5)
@@ -870,7 +873,7 @@ async def send_heartbeat(websocket, interval=30):
             await websocket.ping()
             defs.announce("Websocket heartbeat sent to exchange")
         except Exception as e:
-            message = f"*** Warning S0004: Warning sending heartbeat to exchange: {e} ***"
+            message = f"*** Warning S0004: Warning sending heartbeat to exchange ***\n{e}"
             defs.log_error(message)
             break
         await asyncio.sleep(interval)
@@ -916,13 +919,13 @@ async def call_api(symbol, intervals):
                     
                     # Uptime ping
                     if current_time - uptime_ping['time'] > uptime_ping['delay']:
+                        ping_message(current_time)
                         uptime_ping['time'] = current_time
-                        ping_message()                      
 
                     # Periodic tasks
                     if current_time - periodic['time'] > periodic['delay']:
+                        periodic_tasks(current_time)
                         periodic['time'] = current_time
-                        periodic_tasks()
 
                     # Get response                    
                     response      = await websocket.recv()
@@ -937,13 +940,13 @@ async def call_api(symbol, intervals):
 
                 # Reconnect on connection close
                 except websockets.exceptions.ConnectionClosed as e:
-                    message = f"*** Warning S0005: Exchange websocket connection closed: {e} ***"
+                    message = f"*** Warning S0005: Exchange websocket connection closed ***\n{e}"
                     defs.log_error(message)
                     break
                 
                 # Reconnect on anything else
                 except Exception as e:
-                    message = f"*** Error S0006: Exchange websocket error: {e} ***"
+                    message = f"*** Error S0006: Exchange websocket error ***\n{e}"
                     defs.log_error(message)
                     break
 

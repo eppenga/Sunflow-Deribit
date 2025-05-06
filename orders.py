@@ -95,7 +95,7 @@ def history(orderId, orderLinkId, info):
                 order          = data
                 order_received = True
             else:
-                message = f"*** Warning S0012: Order disappeared from exchange, order ID is '{orderId}' and custom ID is '{orderLinkId} ***'"
+                message = f"*** Warning S0012: Order disappeared from exchange ***\nOrder ID is '{orderId}' and custom ID is '{orderLinkId}'"
                 defs.log_error(message)
                 error_code = 2
         else:
@@ -431,7 +431,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     except Exception as e:
         
         # Buy order failed, log, reset active_order and return
-        message = f"*** Warning S0007a: Buy order failed when placing, trailing stopped! {e} ***"
+        message = f"*** Warning S0007a: Buy order failed when placing, trailing stopped! ***\n{e}"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
@@ -458,7 +458,7 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     if error_code != 0:
 
         # Buy order failed, log, reset active_order and return
-        message = f"*** Warning S0007b: Buy order failed when placing, trailing stopped! {response_message} ***"
+        message = f"*** Warning S0007b: Buy order failed when placing, trailing stopped! ***\n{response_message}"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
@@ -552,7 +552,7 @@ def sell(symbol, spot, active_order, prices, info):
     except Exception as e:
 
         # Sell order failed, log, reset active_order and return
-        message = f"*** Warning S0008a: Sell order failed due to error, trailing stopped! {e} ***"
+        message = f"*** Warning S0008a: Sell order failed due to error, trailing stopped! ***\n{e}"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))        
@@ -579,7 +579,7 @@ def sell(symbol, spot, active_order, prices, info):
     if error_code != 0:
 
         # Sell order failed, log, reset active_order and return
-        message = f"*** Warning S0008b: Sell order failed when placing, trailing stopped! {response_message} ***"
+        message = f"*** Warning S0008b: Sell order failed when placing, trailing stopped! ***\n{response_message}"
         defs.log_error(message)
         active_order['active'] = False
         if speed: defs.announce(defs.report_exec(stime))    
