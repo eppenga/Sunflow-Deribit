@@ -861,7 +861,7 @@ async def connect_websocket():
             defs.announce("Connected to exchange websocket")
             return websocket
         except Exception as e:
-            message = f"*** Error S0003: Exchange websocket error ***\n{e}"
+            message = f"*** Error S0003: Exchange websocket error ***\n>>> Message: {e}"
             defs.log_error(message)            
             defs.announce("Reconnecting to exchange in 5 seconds...")
             await asyncio.sleep(5)
@@ -873,7 +873,7 @@ async def send_heartbeat(websocket, interval=30):
             await websocket.ping()
             defs.announce("Websocket heartbeat sent to exchange")
         except Exception as e:
-            message = f"*** Warning S0004: Warning sending heartbeat to exchange ***\n{e}"
+            message = f"*** Warning S0004: Warning sending heartbeat to exchange ***\n>>> Message: {e}"
             defs.log_error(message)
             break
         await asyncio.sleep(interval)
@@ -940,13 +940,13 @@ async def call_api(symbol, intervals):
 
                 # Reconnect on connection close
                 except websockets.exceptions.ConnectionClosed as e:
-                    message = f"*** Warning S0005: Exchange websocket connection closed ***\n{e}"
+                    message = f"*** Warning S0005: Exchange websocket connection closed ***\n>>> Message: {e}"
                     defs.log_error(message)
                     break
                 
                 # Reconnect on anything else
                 except Exception as e:
-                    message = f"*** Error S0006: Exchange websocket error ***\n{e}"
+                    message = f"*** Error S0006: Exchange websocket error ***\n>>> Message: {e}"
                     defs.log_error(message)
                     break
 

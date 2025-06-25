@@ -259,7 +259,7 @@ def log_error(exception):
        
     # Write to error log file
     with open(config.error_file, 'a', encoding='utf-8') as file:
-        file.write(message + "\n")
+        file.write(message + "\n\n")
     
     # Output to stdout
     defs.announce(f"{exception} | File: {filename} | Function: {functionname}")

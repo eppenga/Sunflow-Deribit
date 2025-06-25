@@ -116,7 +116,7 @@ def new_token(token):
             pprint.pprint(data)
             print()
     except Exception as e:
-        message = f"*** Error: S0001: Error when creating a new token ***\n{e}"
+        message = f"*** Error: S0001: Error when creating a new token ***\n>>> Message: {e}"
         defs.log_error(message)
     
     # Extract token data and check validity
@@ -154,7 +154,7 @@ def refresh_token(token):
     except Exception as e:
         
         # Throw warning
-        message = f"*** Warning S0002a: Warning when refreshing token ***\n{e}"
+        message = f"*** Warning S0002a: Warning when refreshing token ***\n>>> Message: {e}"
         defs.log_error(message)
         
         # Get new token
