@@ -251,6 +251,10 @@ def log_error(exception):
     # Order history warning, order disappeared without reason
     if "S0012" in exception:
         halt_execution = False
+        
+    # Not enough ticker updates resulting, API or exchange crashed
+    if "S0015" in exception:
+        halt_execution = True
        
     # Error: Dataframe failure
     if ("(30908)" in exception) or ("Length of values" in exception) or ("All arrays must be of the same length" in exception):
