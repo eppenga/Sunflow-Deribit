@@ -403,7 +403,6 @@ def amend_quantity_sell(symbol, active_order, info):
     order            = {}
     result           = ()
     error_code       = 0
-    exception        = ""
     response_message = ""
     response_skip    = False
 
@@ -464,7 +463,7 @@ def amend_quantity_sell(symbol, active_order, info):
     if speed: defs.announce(defs.report_exec(stime))
 
     # Return error code 
-    return error_code, exception
+    return error_code, response_message
 
 # Change quantity trailing sell helper
 def atp_helper(symbol, active_order, info):
