@@ -295,6 +295,8 @@ def check_orders(transactions, info):
     debug = False
     
     # Initialize variables
+    error_code       = 0
+    result           = ()
     message          = ""
     all_buys         = []
     transaction      = {}
@@ -316,19 +318,24 @@ def check_orders(transactions, info):
             temp_transaction = transaction
             if transaction['status'] != "Closed":
                 defs.announce("Performing an additional check on order status via exchange")
-                temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)[0]
+                result           = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info, True)
+                temp_transaction = result[0]
+                error_code       = result[1]
         else:
             # Check all order on exchange regardless of status
             message = f"Checking order on exchange: '{transaction['orderId']}'"
             if debug: message = message + f"'{transaction['orderLinkId']}'"
             defs.announce(message)
-            temp_transaction = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info)[0]
+            result           = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info, True)
+            temp_transaction = result[0]
+            error_code       = result[1]           
 
-        # Assign status, if not filled just disregard
-        if "Filled" in temp_transaction['orderStatus']:
-            temp_transaction['status'] = "Closed"
-            all_buys.append(temp_transaction)
-        
+        # Assign status, if not filled or faulty order, disregard
+        if error_code != 3:
+            if "Filled" in temp_transaction['orderStatus']:
+                temp_transaction['status'] = "Closed"
+                all_buys.append(temp_transaction)
+       
     # Save refreshed database
     database.save(all_buys, info)
     

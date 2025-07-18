@@ -20,7 +20,7 @@ def order_id(order):
     return id
 
 # Get order history
-def history(orderId, orderLinkId, info):
+def history(orderId, orderLinkId, info, startup=False):
     
     # Debug and speed
     debug = False
@@ -95,9 +95,13 @@ def history(orderId, orderLinkId, info):
                 order          = data
                 order_received = True
             else:
-                message = f"*** Warning S0012: Order disappeared from exchange ***\n>>> Message: Order ID is '{orderId}' and custom ID is '{orderLinkId}'"
-                defs.log_error(message)
-                error_code = 2
+                if startup:
+                    defs.announce(f"Order with {orderId} and custom ID {orderLinkId} not found, going to remove in database")
+                    error_code = 3
+                else:
+                    message = f"*** Warning S0012: Order disappeared from exchange ***\n>>> Message: Order ID is '{orderId}' and custom ID is '{orderLinkId}'"
+                    defs.log_error(message)
+                    error_code = 2
         else:
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
             defs.log_error(message)
@@ -244,16 +248,19 @@ def transaction_from_order(order):
     return transaction, error_code
 
 # Turn an order from the exchange into a properly formatted transaction after the order already exists
-def transaction_from_id(orderId, orderLinkId, info):
+def transaction_from_id(orderId, orderLinkId, info, startup=False):
 
     # Initialize variables
     result        = ()
+    transaction   = ""
     
     # Do logic
-    result        = history(orderId, orderLinkId, info)
+    result        = history(orderId, orderLinkId, info, startup)
     order_history = result[0]
     error_code    = result[1]
-    transaction   = decode(order_history)
+    # Only decode if we have an order
+    if error_code != 3:
+        transaction   = decode(order_history)
 
     # Return transaction
     return transaction, error_code
