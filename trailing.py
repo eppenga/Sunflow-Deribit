@@ -155,12 +155,13 @@ def check_spike(symbol, spot, active_order, order, all_buys, info):
 
     # Initialize variables
     error_code = 0
+    margin     = config.spike_margin
 
     # Check if the order spiked
     if active_order['side'] == "Sell":
 
         # Did it spike and was forgotten when selling
-        if order['triggerPrice'] > spot:
+        if order['triggerPrice'] > spot * (1 + (margin / 100)):
             defs.announce("*** Warning: Sell order spiked, cancelling current order! ***", True, 1)
             # Reset trailing sell
             active_order['active'] = False
@@ -172,7 +173,7 @@ def check_spike(symbol, spot, active_order, order, all_buys, info):
     else:
 
         # Did it spike and was forgotten when buying
-        if order['triggerPrice'] < spot:
+        if order['triggerPrice'] < spot * (1 - (margin / 100)):
             defs.announce("*** Warning:  Buy order spiked, cancelling current order! ***", True, 1)
             # Reset trailing buy
             active_order['active'] = False

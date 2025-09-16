@@ -311,18 +311,21 @@ def check_orders(transactions, info):
 
         # Check orders
         if quick:
-            # Only check order on exchange if status is not Closed
+            # Quick check, only check status is closed
             message = f"Checking order from database with order ID '{transaction['orderId']}'"
             if debug: message = message + f" and custom ID '{transaction['orderLinkId']}'"
             defs.announce(message)
             temp_transaction = transaction
+            
+            # If status is not Closed, then check on the exchange
             if transaction['status'] != "Closed":
                 defs.announce("Performing an additional check on order status via exchange")
                 result           = orders.transaction_from_id(transaction['orderId'], transaction['orderLinkId'], info, True)
                 temp_transaction = result[0]
                 error_code       = result[1]
+
         else:
-            # Check all order on exchange regardless of status
+            # Slow check, query exchange for status
             message = f"Checking order on exchange: '{transaction['orderId']}'"
             if debug: message = message + f"'{transaction['orderLinkId']}'"
             defs.announce(message)
