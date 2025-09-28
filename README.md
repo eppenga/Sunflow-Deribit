@@ -1,5 +1,5 @@
 # Sunflow Crypto Trading Bot for Deribit
-**Crypto Trading Bot to use on Bybit, high frequency and efficient resource handling. Uses websockets to trade in realtime featuring trailing buy and sell. Option to use an additional klines interval to work as confirmation for buy orders, or via orderbook analysis or technical analysis simular to TradingView. Both prevent over-buying when price goes down. Can also behave as a dynamic gribot to save on funds where spread distance and profit percentage are customizable.**
+**Crypto Trading Bot to use on Deribit, high frequency and efficient resource handling. Uses websockets to trade in realtime featuring trailing buy and sell. Option to use an additional klines interval to work as confirmation for buy orders, or via orderbook analysis or technical analysis simular to TradingView. Both prevent over-buying when price goes down. Can also behave as a dynamic gribot to save on funds where spread distance and profit percentage are customizable.**
 
 This is the same bot, but now for Deribit, please check out the original Sunflow Cryptobot (made for Bybit) to get more information.
 
@@ -16,3 +16,4 @@ You using my application is a thank you in itself and hopefully I helped you als
 <a href="https://www.buymeacoffee.com/eppenga" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 _Dedicated to my daughter who has sunflower eyes_
+
