@@ -4,7 +4,7 @@
 
 # Load external libraries
 from loader import load_config
-import pprint, requests
+import pprint, requests, time
 
 # Load internal libraries
 import database, defs, deribit, distance, preload
@@ -32,7 +32,7 @@ def history(orderId, orderLinkId, info, startup=False):
     order          = {}
     order_received = False
     error_code     = 0
-
+    recheck        = False
 
     ''' Load order state via get_order_state (order is presumably open) '''
     deribit.authenticate()
@@ -62,31 +62,54 @@ def history(orderId, orderLinkId, info, startup=False):
         order          = data
         order_received = True
 
+    ''' Load order state via get_order_state_label (order is presumably filled) 
+        Try at least three times, sometimes it's delayed
+    '''
 
-    ''' Load order state via get_order_state_label (order is presumably filled) '''
-    deribit.authenticate()
+    # Check if the order was received via the method above
     if not order_received:
-        message = defs.announce("session: /private/get_order_state_by_label")
-        try:
-            url     = config.api_url + "/private/get_order_state_by_label"
-            headers = {
-                "Authorization": f"Bearer {config.access_token}",
-                "Content-Type" : "application/json"
-            }
-            params = {
-                "currency": str(info['quoteCoin']),
-                "label"   : str(orderLinkId)
-            }
-            response = requests.get(url, headers=headers, params=params)
-            data     = response.json()
-        except Exception as e:
-            message = f"*** Error: Get order state by label for history failed: {e} ***"
-            defs.log_error(message)
 
-        # Check API rate limit and log data if possible
-        if data:
-            data = defs.rate_limit(data)
-            defs.log_exchange(data, message)        
+        # Try an additional way, at least 5 times, it may be delayed
+        for attempt in range(10):
+
+            # Set check
+            recheck = False
+
+            # Query exchange
+            deribit.authenticate()                  
+            message = defs.announce("session: /private/get_order_state_by_label")
+            try:
+                url     = config.api_url + "/private/get_order_state_by_label"
+                headers = {
+                    "Authorization": f"Bearer {config.access_token}",
+                    "Content-Type" : "application/json"
+                }
+                params = {
+                    "currency": str(info['quoteCoin']),
+                    "label"   : str(orderLinkId)
+                }
+                response = requests.get(url, headers=headers, params=params)
+                data     = response.json()
+            except Exception as e:
+                message = f"*** Error: Get order state by label for history failed: {e} ***"
+                defs.log_error(message)
+
+            # Check API rate limit and log data if possible
+            if data:
+                data = defs.rate_limit(data)
+                defs.log_exchange(data, message)
+                
+            # TEMP DEBUG *** CHECK ***
+            defs.announce(f"Checking linked order {orderLinkId}")
+            
+            # Check if order is maybe delayed
+            if (response.status_code == 200) and (data['result'] == []):
+                recheck = True
+                defs.announce(f"Rechecking order, maybe it's delayed, attempt {attempt + 1} / 10")
+                time.sleep(1 + attempt)
+                        
+            # Break out of loop if all is fine or when starting Sunflow
+            if (not recheck) and (not startup): break
 
         # Order response
         if response.status_code == 200:
@@ -96,13 +119,20 @@ def history(orderId, orderLinkId, info, startup=False):
                 order_received = True
             else:
                 if startup:
+                    
+                    # The order does not exist anymore when Sunflow started
                     defs.announce(f"Order with {orderId} and custom ID {orderLinkId} not found, going to remove in database")
                     error_code = 3
-                else:
+                else:                   
+
+                    # The order does not exist anymore while running
                     message = f"*** Warning S0012: Order disappeared from exchange ***\n>>> Message: Order ID is '{orderId}' and custom ID is '{orderLinkId}'"
+                    defs.announce(message)
                     defs.log_error(message)
                     error_code = 2
         else:
+
+            # There was a unknown error
             message = f"*** Error: Failed to get order state: {response.status_code}, {response.text} ***"
             defs.log_error(message)
             error_code = 1
@@ -222,31 +252,6 @@ def cancel(symbol, orderId, orderLinkId):
     # Return error code
     return error_code, exception    
 
-# Turn an order from the exchange into a properly formatted transaction after placing or amending an order
-# Only used by Bybit, not by Deribit
-def transaction_from_order(order):
-
-    # Initialize variables
-    order_history = {}
-    transaction   = {}
-    result        = ()
-    error_code    = 0
-
-    # Get orderId first
-    orderId       = order_id(order)
-
-    # Get order history and status
-    result        = history(orderId)
-    order_history = result[0]
-    error_code    = result[1] 
-
-    # Check for status
-    if error_code == 0:
-        transaction = decode(order_history)
-
-    # Return transaction
-    return transaction, error_code
-
 # Turn an order from the exchange into a properly formatted transaction after the order already exists
 def transaction_from_id(orderId, orderLinkId, info, startup=False):
 
@@ -260,7 +265,7 @@ def transaction_from_id(orderId, orderLinkId, info, startup=False):
     error_code    = result[1]
     # Only decode if we have an order
     if error_code != 3:
-        transaction   = decode(order_history)
+        transaction = decode(order_history)
 
     # Return transaction
     return transaction, error_code

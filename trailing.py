@@ -375,16 +375,24 @@ def aqs_helper(symbol, active_order, info, all_sells, all_sells_new):
     if amend_code == 2:
         # Quantity could not be changed, do nothing
         all_sells_new = all_sells
-        defs.announce("Sell order quantity could not be changed, doing nothing", True, 0)
+        defs.announce("Adjusting quantity sell order not possible, doing nothing", True, 0)
         
     if amend_code == 10:
         all_sells_new = all_sells                        
         # Order does not support modification, do nothing
-        defs.announce("Sell order quantity could not be changed, order does not support modification", True, 0)                        
+        defs.announce("Adjusting quantity sell order not possible, order does not support modification", True, 0)                        
+
+    if amend_code == 11:
+        # Trigger price too high
+        defs.announce(f"Adjusting sell trigger price not possible, trigger price too high", True, 0)
+
+    if amend_code == 12:
+        # Trigger price too low 
+        defs.announce(f"Adjusting sell trigger price not possible, trigger price too low", True, 0)
 
     if amend_code == 100:
-        # Critical error, let's log it and revert
-        message = f"*** Warning S0010: Critical failure while trailing! ***\n>>> Message: {amend_error}"
+        # Unknown failure, let's log it and revert
+        message = f"*** Warning S0010: Failed to adjust quantity in sell order {active_order['orderid']} while trailing! ***\n>>> Message: {amend_error}"
         defs.announce(message, True, 1)
         defs.log_error(message)
 
@@ -442,6 +450,10 @@ def amend_quantity_sell(symbol, active_order, info):
             error_code = 1
         elif response_message == "modification_not_allowed":
             error_code = 10
+        elif response_message == "trigger_price_too_high":
+            error_code = 11
+        elif response_message == "trigger_price_too_low":
+            error_code = 12
         else:
             # Any other error
             error_code = 100
@@ -497,16 +509,16 @@ def atp_helper(symbol, active_order, info):
         defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} order does not support modification", True, 0)
 
     if amend_code == 11:
-        # Order does not support modification
+        # Trigger price too high
         defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} trigger price too high", True, 0)
 
     if amend_code == 12:
-        # Order does not support modification
+        # Trigger price too low 
         defs.announce(f"Adjusting trigger price not possible, {active_order['side'].lower()} trigger price too low", True, 0)
 
     if amend_code == 100:
-        # Critical error, let's log it and revert
-        message = f"*** Warning S0011: Critical failure while trailing! ***\n>>> Message: {amend_error}"
+        # Unknown failure, let's log it and revert
+        message = f"*** Warning S0011: Failed to adjust trigger price in order {active_order['orderid']} while training! ***\n>>> Message: {amend_error}"
         defs.announce(message, True, 1)
         defs.log_error(message)
     

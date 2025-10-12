@@ -184,7 +184,7 @@ def log_error(exception):
     call_frame     = stack[1]
     filename       = Path(call_frame.filename).name
     functionname   = call_frame.function
-    timestamp      = now_utc()[1]
+    timestamp      = now_utc()[6]
 
     # Safeguard from type errors
     exception = str(exception)
