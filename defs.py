@@ -710,7 +710,7 @@ def announce_helper(enabled, config_level, message_level, tag, message):
     if enabled and message_level >= config_level:
         apobj.notify(
             body  = message,
-            title = "Sunflow Cryptobot",
+            title = "Sunflow@Deribit",
             tag   = tag
         )
     
