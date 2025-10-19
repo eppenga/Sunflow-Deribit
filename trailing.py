@@ -33,6 +33,7 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
     result         = ()
     type_check     = ""
     do_check_order = False
+    fill_manual    = False
 
     # Has current price crossed trigger price
     if active_order['side'] == "Sell":
@@ -69,21 +70,16 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
         order        = result[0]
         error_code   = result[1]
         
-        # Check if order does not exist anymore (Deribit sometimes loses orders)
+        # Check if Deribit does not provide info on order
         if error_code == 2:
+            defs.announce(f"*** Warning: Exchange provided no info on order {active_order['orderid']} ***")
+            fill_manual = True           
 
-            # Reset trailing order
-            active_order['active'] = False
-            # Remove order from exchange
-            orders.cancel(symbol, active_order['orderid'], active_order['linkid'])
-            # Rebalance to be safe
-            all_buys = orders.rebalance(all_buys, info)
-            # Remove order from all buys
-            if active_order['side'] == "Buy":
-                all_buys = database.remove(active_order['orderid'], all_buys, info)
             
-        # Check if trailing order is filled, if so reset counters and close trailing process
-        if order['orderStatus'] == "Filled":
+        ######################################################################################
+        # Check if trailing order is filled, if so reset counters and close trailing process #
+        ######################################################################################
+        if fill_manual or order['orderStatus'] == "Filled":
             
             # Prepare message for stdout and Apprise
             defs.announce(f"Trailing {active_order['side'].lower()}: *** Order has been filled! ***")
@@ -91,7 +87,7 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
             message_1 = message_1 + f"at trigger price {defs.format_number(active_order['trigger'], info['tickSize'])} {info['quoteCoin']}"
             
             # Close trailing process
-            result       = close_trail(active_order, all_buys, all_sells, spot, info)
+            result       = close_trail(active_order, all_buys, all_sells, spot, info, fill_manual)
             active_order = result[0]
             all_buys     = result[1]
             all_sells    = result[2]
@@ -232,7 +228,7 @@ def calculate_revenue(transaction, all_sells, spot, info):
     return revenue
     
 # Trailing order does not exist anymore, close it
-def close_trail(active_order, all_buys, all_sells, spot, info):
+def close_trail(active_order, all_buys, all_sells, spot, info, fill_manual=False):
 
     # Debug and speed
     debug = False
@@ -244,14 +240,22 @@ def close_trail(active_order, all_buys, all_sells, spot, info):
     
     # Make active_order inactive
     active_order['active'] = False
+    active_order['orderLinkId'] = "-1"
     
-    # Close the transaction on either buy or sell trailing order
-    transaction = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)[0]
-    transaction['status'] = "Closed"
-    if debug:
-        defs.announce(f"Debug: {active_order['side']} order")
-        pprint.pprint(transaction)
-        print()
+    # Create order manually if exchange failed
+    if fill_manual:
+        transaction = orders.virtual_order(active_order, info)
+    
+    # Query exchange on real orders
+    if not fill_manual:  
+    
+        # Close the transaction on either buy or sell trailing order
+        transaction = orders.transaction_from_id(active_order['orderid'], active_order['linkid'], info)[0]
+        transaction['status'] = "Closed"
+        if debug:
+            defs.announce(f"Debug: {active_order['side']} order")
+            pprint.pprint(transaction)
+            print()
           
     # Order was bought, create new all buys database
     if transaction['side'] == "Buy":

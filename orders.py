@@ -12,6 +12,60 @@ import database, defs, deribit, distance, preload
 # Load config
 config = load_config()
 
+# Create virtual order in case exchange is not providing
+def virtual_order(active_order, info):
+
+    # Debug
+    debug = True
+    
+    # Initialize variables
+    order = {}
+      
+    # Set order
+    order['avgPrice']     = active_order['current']
+    order['createdTime']  = active_order['created']
+    order['linkedid']     = "-1"
+    order['orderid']      = active_order['orderid']
+    order['orderStatus']  = "Effective"
+    order['orderType']    = "Conditional"
+    order['qty']          = active_order['qty']
+    order['side']         = active_order['side']
+    order['status']       = "Closed"
+    order['symbol']       = info['symbol']
+    order['triggerPrice'] = active_order['trigger']
+    order['updatedTime']  = defs.now_utc()[4]
+                 
+    # Set cumulative quantity and value
+    order['cumExecQty']   = order['qty']
+    order['cumExecValue'] = order['qty'] * order['avgPrice']
+    order['cumExecValue'] = defs.round_number(order['cumExecValue'], info['quotePrecision'], "down")
+    
+    # Set cumulative fees
+    if active_order['side'] == "Buy":
+        order['cumExecFeeCcy'] = info['baseCoin']
+        order['cumExecFee']    = order['cumExecQty'] * info['feeTaker']
+        order['cumExecFee']    = defs.round_number(order['cumExecFee'], info['basePrecision'], "down")
+        
+    elif active_order['side'] == "Sell":
+        order['cumExecFeeCcy'] = info['quoteCoin']
+        order['cumExecFee']    = order['cumExecValue'] * info['feeTaker']
+        order['cumExecFee']    = defs.round_number(order['cumExecFee'], info['quotePrecision'], "down")
+   
+    # Report to stdout
+    message = f"*** Warning: Created virtual order {active_order['orderid']} ! ***"
+    defs.announce(message)
+    
+    if debug:
+        defs.announce(f"Debug: Order {active_order['orderid']} fill data was set manually")
+        print("active_order")
+        pprint.pprint(active_order)
+        print("\norder")
+        pprint.pprint(order)
+        print()
+        
+    # Return manually created order
+    return order
+
 # Get orderId from exchange order
 def order_id(order):
     
@@ -113,7 +167,7 @@ def history(orderId, orderLinkId, info, startup=False):
 
         # Order response
         if response.status_code == 200:
-            if data['result'] != []:
+            if data.get('result'):
                 data['result'] = data['result'][0]   # labels are not unique at Deribit, for Bybit they are
                 order          = data
                 order_received = True
@@ -123,10 +177,11 @@ def history(orderId, orderLinkId, info, startup=False):
                     # The order does not exist anymore when Sunflow started
                     defs.announce(f"Order with {orderId} and custom ID {orderLinkId} not found, going to remove in database")
                     error_code = 3
+
                 else:                   
 
                     # The order does not exist anymore while running
-                    message = f"*** Warning S0012: Order disappeared from exchange ***\n>>> Message: Order ID is '{orderId}' and custom ID is '{orderLinkId}'"
+                    message = f"*** Warning S0012: Order not found at exchange ***\n>>> Message: Order ID is '{orderId}' and custom ID is '{orderLinkId}'"
                     defs.announce(message)
                     defs.log_error(message)
                     error_code = 2
