@@ -12,7 +12,6 @@
 
 # Load external libraries
 from pathlib import Path
-from pybit.unified_trading import HTTP
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -37,14 +36,6 @@ if not config_path.exists():
 sys.path.append(str(config_path.parent))
 config_module_name = config_path.stem
 config = importlib.import_module(config_module_name)
-
-# Connect to exchange
-session = HTTP(
-    testnet                 = False,
-    api_key                 = config.api_key,
-    api_secret              = config.api_secret,
-    return_response_headers = True
-)
 
 # Initialize variables
 debug = False
@@ -285,7 +276,7 @@ axes[1].set_xticks(axes[1].get_xticks())  # Ensure xticks are set
 axes[1].tick_params(axis='x', rotation=45)  # Rotate xticks
 
 # Adjust layout to prevent overlap and give space for the text
-plt.tight_layout(rect=[0, 0, 1, 0.96])
+plt.tight_layout(rect=(0.0, 0.0, 1.0, 0.96))
 
 # Save the plot to the specified file
 plt.savefig(config.data_suffix + "analysis.png")

@@ -5,6 +5,7 @@
 # Load external libraries
 from time import sleep
 from pathlib import Path
+from websockets.protocol import State
 import asyncio, argparse, importlib, json, pprint, sys, traceback, websockets
 import pandas as pd
 
@@ -883,7 +884,7 @@ async def connect_websocket():
 
 # Heartbeat
 async def send_heartbeat(websocket, interval=30):
-    while websocket.open and not defs.halt_sunflow:
+    while (websocket.state is State.OPEN) and (not defs.halt_sunflow):
         try:
             await websocket.ping()
             defs.announce("Websocket heartbeat sent to exchange")
@@ -927,7 +928,7 @@ async def call_api(symbol, intervals):
             asyncio.create_task(send_heartbeat(websocket))
             
             # Get data from exchange
-            while websocket.open and not defs.halt_sunflow:
+            while (websocket.state is State.OPEN) and (not defs.halt_sunflow):
                 try:
                     current_time = defs.now_utc()[4]
                     #simulated    = simulated_ticker()      # *** CHECK *** How to fix simulated tickers??

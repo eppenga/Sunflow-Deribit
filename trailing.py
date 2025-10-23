@@ -30,6 +30,7 @@ def check_order(symbol, spot, compounding, active_order, all_buys, all_sells, in
     global stuck
     
     # Initialize variables
+    order          = {}
     result         = ()
     type_check     = ""
     do_check_order = False

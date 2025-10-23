@@ -312,7 +312,7 @@ def transaction_from_id(orderId, orderLinkId, info, startup=False):
 
     # Initialize variables
     result        = ()
-    transaction   = ""
+    transaction   = {}
     
     # Do logic
     result        = history(orderId, orderLinkId, info, startup)

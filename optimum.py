@@ -113,6 +113,7 @@ def calc_volatility(optimizer, df, prices, distance, spread, profit, length=10):
     global df_errors, halt_sunflow
     
     # Initialize variables
+    df_errors    = 0
     distance_new = distance
     spread_new   = spread
     profit_new   = profit
@@ -223,13 +224,13 @@ def optimize(prices, profit, active_order, use_spread, optimizer):
     if active_order['side'] not in optimizer['sides']:
         defs.announce(f"Optimization not executed, active side {active_order['side']} is not in {optimizer['sides']}")
         if speed: defs.announce(defs.report_exec(stime, "early return to optimizaton issue"))
-        return profit, active_order, optimizer
+        return profit, active_order, use_spread, optimizer
     
     # Check if we can optimize
     if stime - prices['time'][0] < optimizer['limit_min']:
         defs.announce(f"Optimization not possible yet, missing {stime - prices['time'][0]} ms of price data")
         if speed: defs.announce(defs.report_exec(stime, "early return due to optimizaton issue"))
-        return profit, active_order, optimizer
+        return profit, active_order, use_spread, optimizer
 
     # Get the most recent dataframe
     df = build_df(optimizer, prices, interval)
