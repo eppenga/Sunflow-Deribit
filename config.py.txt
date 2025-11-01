@@ -12,10 +12,17 @@ interval_3          = 5            # Klines timeframe second confirmation interv
 interval_average    = False        # Calculate the average over the active intervals or treat them separately
 limit               = 250          # Number of klines downloaded, used for calculcating technical indicators
 profit              = 0.400        # Minimum profit percentage
-distance            = 0.100        # Trigger price distance percentage when Fixed is used by wiggle
-wiggle              = "Fixed"      # Method for trigger price distance, Fixed, Spot, Wave, ATR, EMA or Hybrid
+spike_margin        = 1.00         # Margin in percent to prevent false spike detection in orders
 depth               = 0.10         # Depth in percentages used to calculate market depth from orderbook
 multiplier          = 1.00         # Multiply minimum order quantity by this factor
+
+# Wave
+wave_wiggle         = "Wave"       # Method for trigger price distance, Fixed, Spot, Wave, EMA, ATR or ChatGPT
+wave_minimum        = False        # Minimum distance can't drop below default distance
+wave_peaks          = True         # Overrides wave_minimum when price distance is above default distance
+wave_distance       = 0.100        # Trigger price distance percentage when Fixed is used by wiggle
+wave_timeframe      = 10000         # Timeframe in ms to measure wave length, used when wiggle uses Wave
+wave_multiplier     = 1.00         # Multiply wave percentage by this multiplier
 
 # Spread between orders
 spread_enabled      = True         # Use spread as buy indicator
@@ -26,13 +33,11 @@ indicators_enabled  = True         # Use technical indicators as buy indicator
 indicators_minimum  = -0.25        # Minimum advice value
 indicators_maximum  = +0.50        # Maximum advice value
 
-# Wave length
-wave_timeframe      = 10000        # Timeframe in ms to measure wave length, used when wiggle uses Wave, EMA or Hybrid
-wave_multiplier     = 1.00         # Multiply wave percentage by this multiplier
-
 # Exchange keys (ALWAYS KEEP THESE SECRET)
 api_key             = "123456"     # API Key
 api_secret          = "123456"     # API Secret
+api_url             = "https://www.deribit.com/api/v2"                  # API URL
+api_ws              = "wss://www.deribit.com/ws/api/v2"                 # API Websocket
 
 
 ## EXPERIMENTAL PARAMETERS
@@ -51,7 +56,9 @@ pricelimit_max_sell = 0            # Maximum sell price, set to 0 if do not want
 optimizer_enabled   = False        # Try to optimize the minimum profit and trigger price distance percentage
 optimizer_spread    = False        # If optimize is active, also optimize spread distance
 optimizer_sides     = "Buy,Sell"   # When optimizing optimize both on buy and sell or only sell
+optimizer_method    = "Volatility" # Method used to optimize distance, profit and / or spread
 optimizer_interval  = 30           # Interval in minutes used for indicator KPI
+optimizer_delta     = "min"        # Delta  used for indicator KPI (s, min or h)
 optimizer_limit_min = 25920000     # Minimum miliseconds of spot price data (8,640,000 is one day)
 optimizer_limit_max = 864000000    # Maximum miliseconds of spot price data
 optimizer_adj_min   = 0            # Minimum profit and trigger price adjustment (-50 = halve)
@@ -111,7 +118,6 @@ revenue_log_sides   = True                                       # Log buy and s
 wallet_report       = True                                       # Report wallet value, database and coins (also used by compounding)
 session_report      = True                                       # Report exchange sessions to stdout
 database_rebalance  = True                                       # Sync the base asset of the buys database to the exchange
-protect_peaks       = True                                       # Slow down distance to minimum
 quick_check         = False                                      # Quick check orders on startup
 func_show_delay     = False                                      # When set to True, delay messages are always shown
 func_norm_delay     = 500                                        # Show message when execution of a function is greater in ms

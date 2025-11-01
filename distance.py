@@ -107,7 +107,7 @@ def protect(active_order, price_distance):
             active_order['fluctuation'] = profitable
                         
         # If price distance is larger than default, use smaller distances *** CHECK *** Maybe this can be better
-        if config.protect_peaks:
+        if config.wave_peaks:
             if active_order['wave'] < active_order['distance']:
                 if price_distance > active_order['distance']:
                     if active_order['wave'] > 0:
@@ -130,7 +130,7 @@ def protect(active_order, price_distance):
             active_order['fluctuation'] = active_order['distance']
 
         # If price distance is larger than default, use smaller distances *** CHECK *** Maybe this can be better
-        if config.protect_peaks:
+        if config.wave_peaks:
             if active_order['wave'] < active_order['distance']:
                 if price_distance > active_order['distance']:
                     if active_order['wave'] > 0:

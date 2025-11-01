@@ -117,11 +117,13 @@ active_order['active']               = False                                    
 active_order['start']                = 0                                           # Start price when trailing order began     
 active_order['previous']             = 0                                           # Previous price
 active_order['current']              = 0                                           # Current price
-active_order['wiggle']               = config.wiggle                               # Method to use to calculate trigger price distance
-active_order['distance']             = config.distance                             # Trigger price distance percentage when set to default
-active_order['distance_ini']         = config.distance                             # Keep initial distance always stored
-active_order['fluctuation']          = config.distance                             # Trigger price distance percentage when set to wiggle
-active_order['wave']                 = config.distance                             # Trigger price distance percentage when set to wave
+active_order['created']              = 0                                           # Create timestamp in ms
+active_order['updated']              = 0                                           # Update timestamp in ms
+active_order['wiggle']               = config.wave_wiggle                          # Method to use to calculate trigger price distance
+active_order['distance']             = config.wave_distance                        # Default trigger price distance percentage
+active_order['wave']                 = config.wave_distance                        # Calculated trigger price distance percentage
+active_order['fluctuation']          = config.wave_distance                        # Applied trigger price distance percentage
+active_order['last']                 = config.wave_distance                        # Last applied trigger price distance percentage
 active_order['orderid']              = 0                                           # Order ID
 active_order['linkid']               = 0                                           # Link ID (label)
 active_order['trigger']              = 0                                           # Trigger price for order
@@ -231,9 +233,10 @@ def handle_ticker(message):
         lock_ticker['time'] = current_time
         
         # Decoded message and get latest ticker
-        ticker['time']      = int(message['params']['data']['timestamp'])
-        ticker['lastPrice'] = float(message['params']['data']['price'])
-        ticker['lastPrice'] = defs.round_number(ticker['lastPrice'], info['tickSize'])   # Deribit does not deliver prices occording to tickSize via websocket!
+        ticker['time']          = int(message['params']['data']['timestamp'])
+        ticker['lastPrice']     = float(message['params']['data']['price'])
+        ticker['lastPrice']     = defs.round_number(ticker['lastPrice'], info['tickSize'])   # Deribit does not deliver prices occording to tickSize via websocket!
+        active_order['current'] = ticker['lastPrice']
 
         # Popup new price
         prices['time'].append(ticker['time'])
@@ -259,7 +262,6 @@ def handle_ticker(message):
 
         # Run trailing if active
         if active_order['active']:
-            active_order['current'] = ticker['lastPrice']
             result       = trailing.trail(symbol, ticker['lastPrice'], compounding, active_order, info, all_buys, all_sells, prices)
             active_order = result[0]
             all_buys     = result[1]

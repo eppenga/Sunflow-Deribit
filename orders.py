@@ -463,12 +463,14 @@ def buy(symbol, spot, compounding, active_order, all_buys, prices, info):
     info = preload.calc_info(info, spot, config.multiplier, compounding)
 
     # Initialize active_order
-    active_order['side']     = "Buy"
-    active_order['active']   = True
-    active_order['start']    = spot
-    active_order['previous'] = spot
-    active_order['current']  = spot
-    active_order['linkid']   = deribit.custom_id()
+    active_order['side']        = "Buy"
+    active_order['active']      = True
+    active_order['start']       = spot
+    active_order['previous']    = spot
+    active_order['current']     = spot
+    active_order['linkid']      = deribit.custom_id()
+    active_order['fluctuation'] = config.wave_distance
+    active_order['last']        = config.wave_distance 
     
     # Determine distance of trigger price
     active_order = distance.calculate(active_order, prices)
@@ -584,12 +586,14 @@ def sell(symbol, spot, active_order, prices, info):
     defs.announce("*** SELL SELL SELL! ***")
 
     # Initialize active_order
-    active_order['side']     = "Sell"
-    active_order['active']   = True
-    active_order['start']    = spot
-    active_order['previous'] = spot
-    active_order['current']  = spot
-    active_order['linkid']   = deribit.custom_id()    
+    active_order['side']        = "Sell"
+    active_order['active']      = True
+    active_order['start']       = spot
+    active_order['previous']    = spot
+    active_order['current']     = spot
+    active_order['linkid']      = deribit.custom_id()    
+    active_order['fluctuation'] = config.wave_distance
+    active_order['last']        = config.wave_distance 
   
     # Determine distance of trigger price
     active_order = distance.calculate(active_order, prices)
